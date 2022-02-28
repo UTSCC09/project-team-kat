@@ -4,7 +4,7 @@
 
 Keshavaa Shaiskandan
 Ammar Tariq 
-Tanzim
+Tanzim Ahmed
 
 ### Description of Application:
 
@@ -19,6 +19,13 @@ Additional features are described below, but this is the main gist and purpose o
 ### Key features completed by Final Version:
 
 ### Tech Stack:
+1) M - Mongo DB to store data
+2) E - Express JS to support Node JS backend server
+3) R - React JS to create interactive UIs
+4) N - Node JS to create backend server
+5) G - GraphQL for data exchange b/w client and server
+6) Docker to modularize application
+7) AWS S3 to store images
 
 ### Top 5 Technical Challenges:
 
