@@ -16,6 +16,11 @@ Additional features are described below, but this is the main gist and purpose o
 
 ### Key features completed by Beta Version:
 
+1) User authentication including login, register, secured endpoints.
+2) Managing Groups - Creating groups, adding roomates, updates/deletes.
+3) Canvas View - Creating posts, moving them around, updates/deletes.
+4) Logging Costs - UI and logic for distributing costs between roommates.  
+
 ### Key features completed by Final Version:
 
 ### Tech Stack:
