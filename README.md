@@ -16,6 +16,11 @@ Additional features are described below, but this is the main gist and purpose o
 
 ### Key features completed by Beta Version:
 
+1) User authentication including login, register, secured endpoints.
+2) Managing Groups - Creating groups, adding roomates, updates/deletes.
+3) Canvas View - Creating posts, moving them around, updates/deletes.
+4) Logging Costs - UI and logic for distributing costs between roommates.  
+
 ### Key features completed by Final Version:
 1) Support secure payments using Stripe API so that users in the same group can pay the balance they owe.
 2) Make canvas have live updates. Users are able to post on the canvas and group memebers will be able to instantly see the canvas update with the post.
