@@ -1,9 +1,9 @@
-# Project Title: HomeSplit
+# Project Title: PayMates
 
 ### Team Members:
 
-Keshavaa Shaiskandan
-Ammar Tariq 
+Keshavaa Shaiskandan <br>
+Ammar Tariq <br>
 Tanzim Ahmed
 
 ### Description of Application:
