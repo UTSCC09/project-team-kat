@@ -17,6 +17,11 @@ Additional features are described below, but this is the main gist and purpose o
 ### Key features completed by Beta Version:
 
 ### Key features completed by Final Version:
+1) Support secure payments using Stripe API so that users in the same group can pay the balance they owe.
+2) Make canvas have live updates. Users are able to post on the canvas and group memebers will be able to instantly see the canvas update with the post.
+3) [Optional] Make update profile view for users to personalize profiles (possibly change name/email/password/profile picture).
+4) [Optional] Support forgot password and allow users to securely update password.
+5) [Optional] Support image upload for posts.
 
 ### Tech Stack:
 1) M - MongoDB to store data
