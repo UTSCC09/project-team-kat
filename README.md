@@ -19,7 +19,7 @@ Additional features are described below, but this is the main gist and purpose o
 ### Key features completed by Final Version:
 
 ### Tech Stack:
-1) M - Mongo DB to store data
+1) M - MongoDB to store data
 2) E - Express JS to support Node JS backend server
 3) R - React JS to create interactive UIs
 4) N - Node JS to create backend server
