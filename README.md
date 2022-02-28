@@ -25,7 +25,8 @@ Additional features are described below, but this is the main gist and purpose o
 4) N - Node JS to create backend server
 5) G - GraphQL for data exchange b/w client and server
 6) Docker to modularize application
-7) AWS S3 to store images
+7) [Optional] AWS S3 to store images and files
+
 
 ### Top 5 Technical Challenges:
 
