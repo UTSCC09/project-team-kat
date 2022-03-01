@@ -30,7 +30,7 @@ Additional features are described below, but this is the main gist and purpose o
 
 ### Tech Stack:
 1) M - MongoDB to store data
-2) E - Express JS to support Node JS backend server
+2) A - Apollo to support Node JS and GraphQL backend server
 3) R - React JS to create interactive UIs
 4) N - Node JS to create backend server
 5) G - GraphQL for data exchange b/w client and server
