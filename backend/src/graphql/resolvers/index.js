@@ -1,8 +1,11 @@
-const testResolvers = require('./Test');
+const userResolvers = require(`./users`);
 
 // Combine all Query and Mutations
 module.exports = {
   Query: {
-    ...testResolvers.Query,
+    ...userResolvers.Query,
   },
+  Mutation: {
+    ...userResolvers.Mutation,
+  }
 };
