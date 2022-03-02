@@ -20,7 +20,7 @@ function Landing() {
                     <img className='image' src={LandingPicture} />
                 </div>
                 <div className='button'>
-                    <Link className='join-btn' to="signup">Join Paymates today!</Link>
+                    <Link className='join-btn' to="/signup">Join Paymates today!</Link>
                 </div>
             </div>
         </div>
