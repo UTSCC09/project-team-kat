@@ -2,12 +2,21 @@ const gql = require('graphql-tag');
 
 // Define all Query and Mutation Schemas
 module.exports = gql`
-    type Test{
-        name: String!,
-        email: String!,
-        message: String!
+    type User {
+        id: ID!
+        email: String!
+        username: String!
+        password: String!
     }
-    type Query{
-        getTests: [Test]
+    type JwtToken {
+        jwt: ID!
+    }
+    type Query {
+        getUser(id: ID!): User
+        getUsers: [User]
+    }
+    type Mutation {
+        register(email: String!, username: String!, password: String!): User!
+        login(email: String!, password: String!): JwtToken!
     }
 `;
