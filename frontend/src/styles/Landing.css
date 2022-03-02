@@ -1,0 +1,43 @@
+.wrapper{
+    margin: 40px;
+}
+
+.heading{
+    font-size: 36px;
+    font-family: "Comfortaa", cursive;
+    margin-bottom: 25px;
+}
+
+.info{
+    font-size: 24px;
+    font-family: "Comfortaa", cursive;
+    margin-bottom: 100px;
+}
+
+.image{
+    width: 100%;
+    max-width: 800px;
+}
+
+.image-container{
+    display: flex;
+    justify-content: center;
+}
+.button{
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+}
+
+.join-btn{
+    
+    font-size: 24px;
+    font-family: "Comfortaa", cursive;
+    margin-bottom: 100px;
+    text-decoration: none;
+    color: black;
+    padding: 30px;
+    border: 2px solid black;
+    border-radius: 45px;
+    margin-top: 25px;
+}

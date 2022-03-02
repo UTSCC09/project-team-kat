@@ -1,0 +1,99 @@
+.login-wrapper{
+    min-height: calc(100vh - 100px);
+    background-color: #2F2F2F;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.login-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-info{
+    min-width: 100%;
+    max-width: 620px;
+    height: 720px;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-picture{
+    min-width: 100%;
+    max-width: 620px;
+    height: 720px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-welcome{
+    font-family: "Comfortaa", cursive;
+    font-size: 36px;
+    margin-bottom: 105px;
+}
+
+.login-cred{
+    margin-left: 15px;
+    max-width: 600px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.label{
+    font-family: "Comfortaa", cursive;
+    color: white;
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.input{
+    max-width: 700px;
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid white;
+    outline: none;
+    background-color: black;
+    font-family: "Comfortaa", cursive;
+    color: white;
+    font-size: 30px;
+    margin-bottom: 50px;
+}
+
+.login-btn{
+    max-width: 300px;
+    width: 100%;
+    background-color: black;
+    font-family: "Comfortaa", cursive;
+    color: white;
+    margin: auto;
+    font-size: 30px;
+    padding: 20px;
+    border: 2px solid white;
+    border-radius: 40px;
+}
+
+.login-btn{
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.btn-container{
+    margin-top: 155px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-register-container{
+    margin-top: 105px;
+    display: flex;
+    justify-content: center;
+}
