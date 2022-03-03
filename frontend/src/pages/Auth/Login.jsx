@@ -1,25 +1,46 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router';
 import LoginPic from '../../images/login.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, BtnContainer, AuthBtn, AuthPicture,
   AuthPictureText} from './Auth.styles';
 import {connect} from 'react-redux';
-import {setMessage} from '../../redux/test/test.actions';
+import {login} from '../../redux/auth/auth.actions';
 
-function Login({setMessage}) {
+function Login({auth, login}) {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      navigate('/');
+    }
+  }, []);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    login({email: email, password: password}, navigate);
+  };
+
   return (
     <div>
       <AuthWrapper>
         <AuthContainer>
           <AuthInfo>
             <AuthCred>
-              <Label>Username</Label>
-              <Input></Input>
+              <Label>Email</Label>
+              <Input onChange={(e) => setEmail(e.target.value)}></Input>
               <Label>Password</Label>
-              <Input></Input>
+              <Input
+                onChange={(e) => setPassword(e.target.value)}
+                type="password">
+              </Input>
             </AuthCred>
             <BtnContainer>
-              <AuthBtn onClick={() => setMessage(Math.random())}>Login</AuthBtn>
+              <AuthBtn onClick={handleLogin}>Login</AuthBtn>
             </BtnContainer>
           </AuthInfo>
           <AuthPicture>
@@ -34,8 +55,8 @@ function Login({setMessage}) {
   );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  setMessage: (message) => dispatch(setMessage(message)),
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, {login})(Login);
