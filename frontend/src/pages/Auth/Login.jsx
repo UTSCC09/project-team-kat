@@ -3,8 +3,10 @@ import LoginPic from '../../images/login.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, BtnContainer, AuthBtn, AuthPicture,
   AuthPictureText} from './Auth.styles';
+import {connect} from 'react-redux';
+import {setMessage} from '../../redux/test/test.actions';
 
-function Login() {
+function Login({setMessage}) {
   return (
     <div>
       <AuthWrapper>
@@ -17,7 +19,7 @@ function Login() {
               <Input></Input>
             </AuthCred>
             <BtnContainer>
-              <AuthBtn>Login</AuthBtn>
+              <AuthBtn onClick={() => setMessage(Math.random())}>Login</AuthBtn>
             </BtnContainer>
           </AuthInfo>
           <AuthPicture>
@@ -32,4 +34,8 @@ function Login() {
   );
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => ({
+  setMessage: (message) => dispatch(setMessage(message)),
+});
+
+export default connect(null, mapDispatchToProps)(Login);
