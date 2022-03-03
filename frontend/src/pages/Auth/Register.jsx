@@ -1,10 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router';
 import RegisterPic from '../../images/register.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, RegisterBtnContainer, AuthBtn, AuthPicture,
   AuthPictureText} from './Auth.styles';
+import {connect} from 'react-redux';
+import {register} from '../../redux/auth/auth.actions';
 
-function Register() {
+function Register({auth, register}) {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      navigate('/');
+    }
+  }, []);
+
+  const handleRegister = () => {
+    register({email: email, username: username, password: password},
+        navigate);
+  };
+
   return (
     <div>
       <AuthWrapper>
@@ -17,15 +37,18 @@ function Register() {
           </AuthPicture>
           <AuthInfo>
             <AuthCred>
-              <Label>Name</Label>
-              <Input></Input>
+              <Label>Username</Label>
+              <Input onChange={(e) => setUsername(e.target.value)}></Input>
               <Label>Email</Label>
-              <Input></Input>
+              <Input onChange={(e) => setEmail(e.target.value)}></Input>
               <Label>Password</Label>
-              <Input></Input>
+              <Input
+                onChange={(e) => setPassword(e.target.value)}
+                type="password">
+              </Input>
             </AuthCred>
             <RegisterBtnContainer>
-              <AuthBtn>Register</AuthBtn>
+              <AuthBtn onClick={handleRegister}>Register</AuthBtn>
             </RegisterBtnContainer>
           </AuthInfo>
         </AuthContainer>
@@ -34,4 +57,8 @@ function Register() {
   );
 }
 
-export default Register;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {register})(Register);
