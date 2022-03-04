@@ -1,66 +1,75 @@
-const User = require('../../models/User');
+const userRepository = require('../../repository/dalUser');
 
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const validateCredentials = require('../../utils/validateCredentials');
 
-dotenv.config()
+const {UserInputError, AuthenticationError,
+  ForbiddenError} = require('apollo-server');
+
+dotenv.config();
 
 module.exports = {
   Query: {
-    getUsers: async () => {
-      const users = await User.find();
-      return users;
-    },
-    
-    getUser: async (_, { id }, context) => {
+    getUser: async (_, {id}, context) => {
       if (!context.id) {
-        throw new Error("User must be authenticated!");
+        throw new AuthenticationError('User must be authenticated!');
       } else if (context.id != id) {
-        throw new Error("Unable to request data from external users!");
+        throw new ForbiddenError('Unable to request data from external users!');
       }
-
-      const user = await User.findById(id);
+      const user = await userRepository.getUserById(id);
       return user;
-    }
+    },
   },
-  
+
   Mutation: {
-    register: async (_ , user) => {
-      if (!user.email || !user.username || !user.password) {
-        throw new Error("Missing required field from request!");
+    register: async (_, user) => {
+      const {email, username, password} = user;
+      if (!email || !username || !password) {
+        throw new UserInputError('Missing required field from request!');
       }
 
-      const password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
-      const newUser = new User({ email: user.email, username: user.username, password: password });
+      validateCredentials.validateEmail(email);
+      validateCredentials.validateUsername(username);
+      validateCredentials.validatePassword(password);
 
-      const savedUser = await newUser.save();
+      const foundUser = await userRepository.getUserByEmail(email);
+      if (foundUser) {
+        throw new UserInputError('Email already registered. Please sign in.');
+      }
 
-      return savedUser;
+      const newUser = await userRepository
+          .createUser(email, username, password);
+      return newUser;
     },
 
     login: async (_, user) => {
-      if (!user.email || !user.password) {
-        throw new Error("Missing required field from request!");
+      const {email, password} = user;
+      if (!email || !password) {
+        throw new UserInputError('Missing required field from request!');
       }
 
-      const foundUser = await User.findOne({ email: user.email });
+      const foundUser = await userRepository.getUserByEmail(email);
       if (!foundUser) {
-        throw new Error("Invalid email. Please try again.");
+        throw new UserInputError('Invalid email. Please try again.');
       }
 
-      const isValidPassword = bcrypt.compare(user.password, foundUser.password);
+      const isValidPassword =
+        await bcrypt.compare(password, foundUser.password);
+
       if (!isValidPassword) {
-        throw new Error("Invalid password. Please try again.");
+        throw new UserInputError('Invalid password. Please try again.');
       }
-      
+
       const jwtToken = jwt.sign(
-        { id: foundUser.id, email: foundUser.email, username: foundUser.username },
-        process.env.TOKEN_SECRET,
-        { expiresIn: '30 days' }
+          {id: foundUser.id, email: foundUser.email,
+            username: foundUser.username},
+          process.env.TOKEN_SECRET,
+          {expiresIn: '30 days'},
       );
 
-      return { jwt: jwtToken };
-    }
-  }
+      return {jwt: jwtToken};
+    },
+  },
 };
