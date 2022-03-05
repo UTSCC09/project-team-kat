@@ -13,7 +13,6 @@ module.exports = {
       const savedUser = await newUser.save();
       return savedUser;
     } catch (err) {
-      console.log(err);
       throw new ApolloError('Internal Error.');
     } finally {
       await session.endSession();
@@ -24,7 +23,6 @@ module.exports = {
       const foundUser = await User.findOne({email});
       return foundUser;
     } catch (err) {
-      console.log(err);
       throw new ApolloError('Internal Error.');
     }
   },
@@ -33,7 +31,6 @@ module.exports = {
       const foundUser = await User.findById(id);
       return foundUser;
     } catch (err) {
-      console.log(err);
       throw new ApolloError('Internal Error.');
     }
   },
