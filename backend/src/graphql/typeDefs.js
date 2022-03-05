@@ -6,14 +6,12 @@ module.exports = gql`
         id: ID!
         email: String!
         username: String!
-        password: String!
     }
     type JwtToken {
         jwt: ID!
     }
     type Query {
         getUser(id: ID!): User
-        getUsers: [User]
     }
     type Mutation {
         register(email: String!, username: String!, password: String!): User!
