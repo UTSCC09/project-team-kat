@@ -41,19 +41,19 @@ function Register({register}) {
               <Input error = {usernameErr || missingFieldErr}
                 onChange={(e) => {
                   setUsername(e.target.value);
-                  setError(null);
+                  setError({});
                 }}></Input>
               <Label>Email</Label>
               <Input error = {emailErr || missingFieldErr}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setError(null);
+                  setError({});
                 }}></Input>
               <Label>Password</Label>
               <Input error = {passwordErr || missingFieldErr}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setError(null);
+                  setError({});
                 }}
                 type="password">
               </Input>
