@@ -13,13 +13,12 @@ function Register({register}) {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState({});
 
-  const fieldErr = error ? error.type : null;
-  const missingFieldErr = fieldErr === 'MISSING_FIELD';
-  const usernameErr = fieldErr === 'INVALID_USERNAME' || missingFieldErr;
-  const emailErr = fieldErr === 'INVALID_EMAIL' || missingFieldErr;
-  const passwordErr = fieldErr === 'INVALID_PASSWORD' || missingFieldErr;
+  const missingFieldErr = error.type === 'MISSING_FIELD';
+  const usernameErr = error.type === 'INVALID_USERNAME';
+  const emailErr = error.type === 'INVALID_EMAIL';
+  const passwordErr = error.type === 'INVALID_PASSWORD';
 
   const handleRegister = () => {
     register({email: email, username: username, password: password}, setError,
@@ -39,19 +38,19 @@ function Register({register}) {
           <AuthInfo>
             <AuthCred>
               <Label>Username</Label>
-              <Input error = {usernameErr}
+              <Input error = {usernameErr || missingFieldErr}
                 onChange={(e) => {
                   setUsername(e.target.value);
                   setError(null);
                 }}></Input>
               <Label>Email</Label>
-              <Input error = {emailErr}
+              <Input error = {emailErr || missingFieldErr}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setError(null);
                 }}></Input>
               <Label>Password</Label>
-              <Input error = {passwordErr}
+              <Input error = {passwordErr || missingFieldErr}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setError(null);

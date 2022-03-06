@@ -12,12 +12,11 @@ function Login({login}) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState({});
 
-  const fieldErr = error ? error.type : null;
-  const missingFieldErr = fieldErr === 'MISSING_FIELD';
-  const emailErr = fieldErr === 'INVALID_EMAIL' || missingFieldErr;
-  const passwordErr = fieldErr === 'INVALID_PASSWORD' || missingFieldErr;
+  const missingFieldErr = error.type === 'MISSING_FIELD';
+  const emailErr = error.type === 'INVALID_EMAIL';
+  const passwordErr = error.type === 'INVALID_PASSWORD';
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -32,13 +31,13 @@ function Login({login}) {
           <AuthInfo>
             <AuthCred>
               <Label>Email</Label>
-              <Input error={emailErr}
+              <Input error={emailErr || missingFieldErr}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setError(null);
                 }}></Input>
               <Label>Password</Label>
-              <Input error={passwordErr}
+              <Input error={passwordErr || missingFieldErr}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setError(null);
