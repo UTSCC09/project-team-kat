@@ -31,8 +31,8 @@ module.exports = {
             'BAD_USER_INPUT', {type: 'MISSING_FIELD'});
       }
 
-      validateCredentials.validateEmail(email);
       validateCredentials.validateUsername(username);
+      validateCredentials.validateEmail(email);
       validateCredentials.validatePassword(password);
 
       const foundUser = await userRepository.getUserByEmail(email);
