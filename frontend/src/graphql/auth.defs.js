@@ -9,7 +9,7 @@ export const LOGIN_MUTATION = `
 export const REGISTER_MUTATION = `
   mutation register($email: String!, $username: String!, $password: String!) {
     register(email: $email, username: $username, password: $password) {
-      id 
+      jwt 
     }
   }
 `;

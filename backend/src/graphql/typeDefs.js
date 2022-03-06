@@ -14,7 +14,8 @@ module.exports = gql`
         getUser(id: ID!): User
     }
     type Mutation {
-        register(email: String!, username: String!, password: String!): User!
+        register(email: String!, username: String!, 
+            password: String!): JwtToken!
         login(email: String!, password: String!): JwtToken!
     }
 `;
