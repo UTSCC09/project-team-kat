@@ -1,17 +1,11 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useNavigate} from 'react-router';
 import {Container, Logo, Links, NavLink} from './Navbar.styles';
 import {connect} from 'react-redux';
 import {logout} from '../../redux/auth/auth.actions';
 
-function Navbar({auth, logout}) {
+function Navbar({auth: {isAuthenticated}, logout}) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate('/');
-    }
-  }, []);
 
   const handleSignOut = (e) => {
     e.preventDefault();
@@ -22,9 +16,9 @@ function Navbar({auth, logout}) {
     <Container>
       <Logo></Logo>
       <Links>
-        {!auth.isAuthenticated && <NavLink to="/login">Login</NavLink>}
-        {!auth.isAuthenticated && <NavLink to="/register">Sign Up</NavLink>}
-        {auth.isAuthenticated &&
+        {!isAuthenticated && <NavLink to="/login">Login</NavLink>}
+        {!isAuthenticated && <NavLink to="/register">Sign Up</NavLink>}
+        {isAuthenticated &&
           <NavLink onClick={handleSignOut} to="/login">Sign Out</NavLink>}
       </Links>
     </Container>
