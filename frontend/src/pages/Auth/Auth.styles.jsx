@@ -102,6 +102,5 @@ export const RegisterBtnContainer = styled.div`
 export const ErrorContainer = styled.div`
     position: absolute;
     bottom: 0;
-    tex-align: center;
     color: red;
 `;

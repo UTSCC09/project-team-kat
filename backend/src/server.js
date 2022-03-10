@@ -14,6 +14,7 @@ const dbURI = `mongodb+srv://${dbUsername}:${dbPassword}@paymates.873s7.mongodb.
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({req}) => ({req}),
 });
 
 mongoose.connect(dbURI).then(() => {
@@ -22,5 +23,3 @@ mongoose.connect(dbURI).then(() => {
 }).then((res) => {
   console.log(`Server running at ${res.url}`);
 });
-
-
