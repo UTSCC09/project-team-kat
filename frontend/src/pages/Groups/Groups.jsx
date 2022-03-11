@@ -3,7 +3,7 @@ import {PageContainer, HeaderContainer, HeaderText,
   AddGrpBtn, GroupsContainer, Group, GroupName, GroupMember,
   GroupMembersContainer, MoreMembers, AddGrpOptions, AddGrpBtnContainer,
   AddGrpOption, StyledModal, Backdrop, PopupContainer, PopupInput, PopupBtn,
-  PupupText,
+  PupupText, PopupInputError, PopupInputContainer,
 } from './Groups.styles';
 import axios from 'axios';
 import {GET_GROUPS_QUERY,
@@ -17,10 +17,15 @@ function Groups() {
     isLoading: false,
   });
   const [openGroupOptions, setOpenGroupOptions] = useState(false);
-  const [popUp, setPopUp] = useState({open: false, page: '', input: ''});
+  const [popUp, setPopUp] = useState({
+    open: false,
+    page: '',
+    input: '',
+  });
   const [newGroup, setNewGroup] = useState({
     data: null,
     isLoading: false,
+    error: null,
   });
 
   const handleClose = () => {
@@ -29,7 +34,31 @@ function Groups() {
     }
   };
 
-  useEffect(() => {
+  const resetNewGroup = () =>
+    setNewGroup({
+      data: null,
+      isLoading: false,
+      error: null});
+
+  const setNewGroupData = (data) =>
+    setNewGroup({
+      data: data,
+      isLoading: false,
+      error: null});
+
+  const setNewGroupError = (error) =>
+    setNewGroup({
+      data: null,
+      isLoading: false,
+      error: error});
+
+  const setNewGroupLoading = () =>
+    setNewGroup({
+      data: null,
+      isLoading: true,
+      error: null});
+
+  const getGroups = () => {
     setGroups({...groups, isLoading: true});
     axios.post('http://localhost:8000', {query: GET_GROUPS_QUERY}).then((res) => {
       if (res.data.errors) throw Error('Could not fetch group data');
@@ -37,34 +66,62 @@ function Groups() {
     }).catch((error) => {
       console.log(error);
     });
-  }, [newGroup]);
+  };
+
+  useEffect(() => {
+    getGroups();
+  }, []);
+
+  const getErrors = (err) => ({
+    code: err.extensions.code,
+    type: err.extensions.type,
+    message: err.message,
+  });
+
+  const fetchError =
+  {
+    code: 'FETCH_ERROR',
+    type: 'FETCH_ERROR',
+    message: 'Unable to fetch data',
+  };
 
   const joinGroup = async () => {
+    setNewGroupLoading();
     axios
         .post('http://localhost:8000',
             {
               query: JOIN_GROUP_MUTATION,
               variables: {code: popUp.input},
             }).then((res) => {
-          if (res.data.errors) throw Error('Could not fetch group data');
-          setNewGroup({data: res.data.data.joinGroup, isLoading: false});
+          if (res.data.errors) {
+            setNewGroupError(getErrors(res.data.errors[0]));
+            return;
+          }
+          setNewGroupData(res.data.data.joinGroup);
+          getGroups();
           handleClose();
         }).catch((error) => {
           console.log(error);
+          setNewGroupError(fetchError);
         });
   };
 
   const createGroup = async () => {
-    setNewGroup({...groups, isLoading: true});
+    setNewGroupLoading();
     axios.post('http://localhost:8000', {
       query: CREATE_GROUP_MUTATION,
       variables: {name: popUp.input},
     }).then((res) => {
-      if (res.data.errors) throw Error('Could not fetch group data');
-      setNewGroup({data: res.data.data.createGroup, isLoading: false});
+      if (res.data.errors) {
+        setNewGroupError(getErrors(res.data.errors[0]));
+        return;
+      }
+      setNewGroupData(res.data.data.createGroup);
+      getGroups();
       setPopUp({...popUp, page: 'GROUP_CODE'});
     }).catch((error) => {
       console.log(error);
+      setNewGroupError(fetchError);
     });
   };
 
@@ -74,10 +131,19 @@ function Groups() {
         return (
           <>
             <div>Please enter a group name</div>
-            <PopupInput
-              onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-            </PopupInput>
-            <PopupBtn onClick={createGroup}>
+            <PopupInputContainer>
+              <PopupInput
+                error={newGroup.error ?
+                  newGroup.error.code === 'BAD_USER_INPUT': false}
+                onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
+              </PopupInput>
+              <PopupInputError>
+                {newGroup.error ? newGroup.error.message : null}
+              </PopupInputError>
+            </PopupInputContainer>
+            <PopupBtn onClick={() => {
+              if (!newGroup.isLoading) createGroup();
+            }}>
               {newGroup.isLoading ? 'Creating Group...' : 'Create Group'}
             </PopupBtn>
           </>
@@ -93,10 +159,18 @@ function Groups() {
         return (
           <>
             <div>Please enter a group code</div>
-            <PopupInput
+            <PopupInputContainer>
+              <PopupInput error={newGroup.error ?
+                  newGroup.error.code === 'BAD_USER_INPUT': false}
               onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-            </PopupInput>
-            <PopupBtn onClick={joinGroup}>
+              </PopupInput>
+              <PopupInputError>
+                {newGroup.error ? newGroup.error.message : null}
+              </PopupInputError>
+            </PopupInputContainer>
+            <PopupBtn onClick={() => {
+              if (!newGroup.isLoading) joinGroup();
+            }}>
               {newGroup.isLoading ? 'Joining Group...' : 'Join Group'}
             </PopupBtn>
           </>
@@ -117,12 +191,14 @@ function Groups() {
                 onClick={() => {
                   setPopUp({...popUp, open: true, page: 'CREATE_GROUP'});
                   setOpenGroupOptions(false);
+                  resetNewGroup();
                 }}>
                   Create group</AddGrpOption>
               <AddGrpOption
                 onClick={() => {
                   setPopUp({...popUp, open: true, page: 'JOIN_GROUP'});
                   setOpenGroupOptions(false);
+                  resetNewGroup();
                 }}>Join group</AddGrpOption>
             </AddGrpOptions> : null}
           </AddGrpBtnContainer>

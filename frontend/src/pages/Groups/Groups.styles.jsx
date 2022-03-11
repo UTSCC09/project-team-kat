@@ -162,7 +162,7 @@ export const PopupContainer = styled.div`
 `;
 
 export const PopupBtn = styled.button`
-margin-top: 30px;
+    margin-top: 50px;
     background-color: white;
     font-family: inherit;
     font-size: 18px;
@@ -182,6 +182,11 @@ margin-top: 30px;
     }
 `;
 
+export const PopupInputContainer = styled.div`
+    width: 100%;
+    position: relative;
+`;
+
 export const PopupInput = styled.input`
     max-width: 700px;
     width: 80%;
@@ -193,6 +198,16 @@ export const PopupInput = styled.input`
     font-size: 30px;
     margin-top: 30px;
     color: ${(props) => props.error ? 'red' : 'black'};
+`;
+
+export const PopupInputError = styled.div`
+     position: absolute;
+     text-align: center;
+     color: red;
+     bottom: -30px;
+     left: 50%;
+     transform: translateX(-50%);
+     width: 100%;
 `;
 
 export const PupupText = styled.div`

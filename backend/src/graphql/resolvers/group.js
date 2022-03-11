@@ -27,20 +27,28 @@ module.exports = {
   },
   Mutation: {
     createGroup: async (_, {name}, context) => {
+      if (!name) {
+        throw new ApolloError(`A group name is required.`,
+            'BAD_USER_INPUT', {type: 'INVALID_NAME'});
+      }
       const user = checkAuth(context);
       const newGroup = await groupRepository.createGroup(name, user.id);
       return getGroupInfo(newGroup);
     },
     joinGroup: async (_, {code}, context) => {
+      if (!code) {
+        throw new ApolloError(`A group code is required.`,
+            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
+      }
       const user = checkAuth(context);
       const foundGroup = await groupRepository.getGroupByCode(code);
       if (!foundGroup) {
-        throw new ApolloError(`Group with code ${code} not found.',
-      'NOT_FOUND', {type: 'INVALID_CODE'}`);
+        throw new ApolloError(`Group with code ${code} not found.`,
+            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
       };
       if (foundGroup.members.includes(user.id)) {
-        throw new ApolloError(`Already joined group.',
-      'BAD_USER_INPUT', {type: 'INVALID_CODE'}`);
+        throw new ApolloError('Already joined group.',
+            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
       }
       const updatedGroup = await groupRepository.addMemberByCode(code, user.id);
       return await getGroupInfo(updatedGroup);
