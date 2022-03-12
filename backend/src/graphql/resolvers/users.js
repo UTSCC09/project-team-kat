@@ -4,8 +4,9 @@ const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const validateCredentials = require('../../utils/validateCredentials');
+const checkAuth = require('../../utils/checkAuth');
 
-const {AuthenticationError, ForbiddenError,
+const {ForbiddenError,
   ApolloError} = require('apollo-server');
 
 dotenv.config();
@@ -13,9 +14,8 @@ dotenv.config();
 module.exports = {
   Query: {
     getUser: async (_, {id}, context) => {
-      if (!context.id) {
-        throw new AuthenticationError('User must be authenticated!');
-      } else if (context.id != id) {
+      const currentUser = checkAuth(context);
+      if (currentUser.id != id) {
         throw new ForbiddenError('Unable to request data from external users!');
       }
       const user = await userRepository.getUserById(id);

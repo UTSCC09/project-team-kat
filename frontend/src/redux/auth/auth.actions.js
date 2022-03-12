@@ -12,7 +12,7 @@ const handleToken = (token, navigate, dispatch) => {
   setAuthToken(token);
   const decoded = jwtDecode(token);
   dispatch(setCurrentUser(decoded));
-  navigate('/home');
+  navigate('/');
 };
 
 const handleError = (error, setError) => {
