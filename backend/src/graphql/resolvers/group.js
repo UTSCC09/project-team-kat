@@ -2,7 +2,7 @@ const checkAuth = require('../../utils/checkAuth');
 const groupRepository = require('../../repository/dalGroup');
 const userRepository = require('../../repository/dalUser');
 
-const {ApolloError} = require('apollo-server-errors');
+const {UserInputError} = require('apollo-server-errors');
 
 const getGroupInfo = async (group) => {
   return {
@@ -28,8 +28,7 @@ module.exports = {
   Mutation: {
     createGroup: async (_, {name}, context) => {
       if (!name) {
-        throw new ApolloError(`A group name is required.`,
-            'BAD_USER_INPUT', {type: 'INVALID_NAME'});
+        throw new UserInputError('A group name is required.');
       }
       const user = checkAuth(context);
       const newGroup = await groupRepository.createGroup(name, user.id);
@@ -37,18 +36,15 @@ module.exports = {
     },
     joinGroup: async (_, {code}, context) => {
       if (!code) {
-        throw new ApolloError(`A group code is required.`,
-            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
+        throw new UserInputError('A group code is required.');
       }
       const user = checkAuth(context);
       const foundGroup = await groupRepository.getGroupByCode(code);
       if (!foundGroup) {
-        throw new ApolloError(`Group with code ${code} not found.`,
-            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
+        throw new UserInputError(`Group with code ${code} not found.`);
       };
       if (foundGroup.members.includes(user.id)) {
-        throw new ApolloError('Already joined group.',
-            'BAD_USER_INPUT', {type: 'INVALID_CODE'});
+        throw new UserInputError('Already joined group.');
       }
       const updatedGroup = await groupRepository.addMemberByCode(code, user.id);
       return await getGroupInfo(updatedGroup);

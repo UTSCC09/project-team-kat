@@ -15,22 +15,25 @@ function Groups() {
   const [groups, setGroups] = useState({
     data: [],
     isLoading: false,
+    error: '',
   });
-  const [openGroupOptions, setOpenGroupOptions] = useState(false);
   const [popUp, setPopUp] = useState({
-    open: false,
     page: '',
     input: '',
   });
   const [newGroup, setNewGroup] = useState({
     data: null,
     isLoading: false,
-    error: null,
+    error: '',
   });
 
-  const handleClose = () => {
+  const [openGroupOptions, setOpenGroupOptions] = useState(false);
+
+  const fetchError = 'Failed to fetch data';
+
+  const handleClosePopUp = () => {
     if (!newGroup.isLoading) {
-      setPopUp({input: '', open: false, page: ''});
+      setPopUp({input: '', page: ''});
     }
   };
 
@@ -38,13 +41,13 @@ function Groups() {
     setNewGroup({
       data: null,
       isLoading: false,
-      error: null});
+      error: ''});
 
   const setNewGroupData = (data) =>
     setNewGroup({
       data: data,
       isLoading: false,
-      error: null});
+      error: ''});
 
   const setNewGroupError = (error) =>
     setNewGroup({
@@ -56,33 +59,30 @@ function Groups() {
     setNewGroup({
       data: null,
       isLoading: true,
-      error: null});
+      error: ''});
 
-  const getGroups = () => {
-    setGroups({...groups, isLoading: true});
-    axios.post('http://localhost:8000', {query: GET_GROUPS_QUERY}).then((res) => {
-      if (res.data.errors) throw Error('Could not fetch group data');
-      setGroups({data: res.data.data.getGroups, isLoading: false});
-    }).catch((error) => {
-      console.log(error);
-    });
+  const handleAddGrpOptionClick = (popUpPage) => {
+    setPopUp({input: '', page: popUpPage});
+    setOpenGroupOptions(false);
+    resetNewGroup();
   };
 
-  useEffect(() => {
-    getGroups();
-  }, []);
-
-  const getErrors = (err) => ({
-    code: err.extensions.code,
-    type: err.extensions.type,
-    message: err.message,
-  });
-
-  const fetchError =
-  {
-    code: 'FETCH_ERROR',
-    type: 'FETCH_ERROR',
-    message: 'Unable to fetch data',
+  const getGroups = () => {
+    setGroups({data: [], isLoading: true, error: ''});
+    axios.post(
+        'http://localhost:8000',
+        {
+          query: GET_GROUPS_QUERY,
+        },
+    ).then((res) =>
+      res.data.errors ?
+        setGroups({data: [], isLoading: false,
+          error: res.data.errors[0].message}) :
+      setGroups({data: res.data.data.getGroups, isLoading: false, error: ''}))
+        .catch((error) => {
+          console.log(error);
+          setGroups({data: [], isLoading: false, error: fetchError});
+        });
   };
 
   const joinGroup = async () => {
@@ -94,12 +94,12 @@ function Groups() {
               variables: {code: popUp.input},
             }).then((res) => {
           if (res.data.errors) {
-            setNewGroupError(getErrors(res.data.errors[0]));
+            setNewGroupError(res.data.errors[0].message);
             return;
           }
           setNewGroupData(res.data.data.joinGroup);
           getGroups();
-          handleClose();
+          handleClosePopUp();
         }).catch((error) => {
           console.log(error);
           setNewGroupError(fetchError);
@@ -113,17 +113,22 @@ function Groups() {
       variables: {name: popUp.input},
     }).then((res) => {
       if (res.data.errors) {
-        setNewGroupError(getErrors(res.data.errors[0]));
+        setNewGroupError(res.data.errors[0].message);
         return;
       }
       setNewGroupData(res.data.data.createGroup);
       getGroups();
-      setPopUp({...popUp, page: 'GROUP_CODE'});
+      setPopUp({input: '', page: 'GROUP_CODE'});
     }).catch((error) => {
       console.log(error);
       setNewGroupError(fetchError);
     });
   };
+
+
+  useEffect(() => {
+    getGroups();
+  }, []);
 
   const renderPopupPage = () => {
     switch (popUp.page) {
@@ -133,13 +138,16 @@ function Groups() {
             <div>Please enter a group name</div>
             <PopupInputContainer>
               <PopupInput
-                error={newGroup.error ?
-                  newGroup.error.code === 'BAD_USER_INPUT': false}
+                error={newGroup.error}
                 onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
               </PopupInput>
-              <PopupInputError>
-                {newGroup.error ? newGroup.error.message : null}
-              </PopupInputError>
+              {
+                newGroup.error ?
+                <PopupInputError>
+                  {newGroup.error}
+                </PopupInputError> :
+                null
+              }
             </PopupInputContainer>
             <PopupBtn onClick={() => {
               if (!newGroup.isLoading) createGroup();
@@ -160,13 +168,16 @@ function Groups() {
           <>
             <div>Please enter a group code</div>
             <PopupInputContainer>
-              <PopupInput error={newGroup.error ?
-                  newGroup.error.code === 'BAD_USER_INPUT': false}
-              onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
+              <PopupInput error={newGroup.error}
+                onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
               </PopupInput>
-              <PopupInputError>
-                {newGroup.error ? newGroup.error.message : null}
-              </PopupInputError>
+              {
+                newGroup.error ?
+                <PopupInputError>
+                  {newGroup.error}
+                </PopupInputError> :
+                null
+              }
             </PopupInputContainer>
             <PopupBtn onClick={() => {
               if (!newGroup.isLoading) joinGroup();
@@ -186,55 +197,69 @@ function Groups() {
           <AddGrpBtnContainer>
             <AddGrpBtn onClick={() => setOpenGroupOptions(true)}>
               Add Group</AddGrpBtn>
-            {openGroupOptions ? <AddGrpOptions>
-              <AddGrpOption
-                onClick={() => {
-                  setPopUp({...popUp, open: true, page: 'CREATE_GROUP'});
-                  setOpenGroupOptions(false);
-                  resetNewGroup();
-                }}>
-                  Create group</AddGrpOption>
-              <AddGrpOption
-                onClick={() => {
-                  setPopUp({...popUp, open: true, page: 'JOIN_GROUP'});
-                  setOpenGroupOptions(false);
-                  resetNewGroup();
-                }}>Join group</AddGrpOption>
-            </AddGrpOptions> : null}
+            {
+              openGroupOptions ?
+              <AddGrpOptions>
+                <AddGrpOption
+                  onClick={() => handleAddGrpOptionClick('CREATE_GROUP')}>
+                    Create group</AddGrpOption>
+                <AddGrpOption
+                  onClick={() => handleAddGrpOptionClick('JOIN_GROUP')}>
+                      Join group
+                </AddGrpOption>
+              </AddGrpOptions> :
+              null
+            }
           </AddGrpBtnContainer>
         </ClickAwayListener>
       </HeaderContainer>
       <GroupsContainer>
-        {groups.isLoading ?
-        <div>Loading...</div> :
-        (groups.data.length === 0 ?
-        <div>No groups found</div> :
-          groups.data.map((group) => (
-            <Group key={group.id}>
-              <GroupName>
-                {group.name}
-              </GroupName>
-              <GroupMembersContainer>
-                {group.members.map((member, index) => (
-                index <= 3?
-                <GroupMember key={member.id}>{member.username}</GroupMember> :
-                null
-                ))}
-                {group.members.length > 3 ?
-                (<MoreMembers>...</MoreMembers>) :
-                null}
-              </GroupMembersContainer>
-            </Group>
-          )))}
+        {
+          groups.isLoading ?
+          <div>Loading...</div> :
+          (
+            groups.error ?
+            <div>{groups.error}</div> :
+            (
+              groups.data.length === 0 ?
+              <div>No groups found</div> :
+              groups.data.map((group) => (
+                <Group key={group.id}>
+                  <GroupName>
+                    {group.name}
+                  </GroupName>
+                  <GroupMembersContainer>
+                    {
+                      group.members.map((member, index) => (
+                      index <= 3?
+                      <GroupMember key={member.id}>
+                        {member.username}
+                      </GroupMember> :
+                      null
+                      ))
+                    }
+                    {
+                      group.members.length > 3 ?
+                      <MoreMembers>...</MoreMembers> :
+                      null
+                    }
+                  </GroupMembersContainer>
+                </Group>
+              ))
+            )
+          )
+        }
       </GroupsContainer>
       <StyledModal
-        open={popUp.open}
-        onClose={handleClose}
+        open={popUp.page ? true : false}
+        onClose={handleClosePopUp}
         BackdropComponent={Backdrop}
       >
-        <PopupContainer>
-          {renderPopupPage()}
-        </PopupContainer>
+        {
+          <PopupContainer>
+            {renderPopupPage()}
+          </PopupContainer>
+        }
       </StyledModal>
     </PageContainer>
   );

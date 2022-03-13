@@ -1,28 +1,71 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router';
+import axios from 'axios';
 import RegisterPic from '../../images/register.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, RegisterBtnContainer, AuthBtn, AuthPicture, ErrorContainer,
-  AuthPictureText} from './Auth.styles';
+  AuthPictureText, InputContainer, InputError} from './Auth.styles';
 import {connect} from 'react-redux';
-import {register} from '../../redux/auth/auth.actions';
+import {REGISTER_MUTATION} from '../../graphql/auth.defs';
+import {setNewUser} from '../../utils/AuthToken';
+import {validateEmail, validatePassword,
+  validateUsername} from '../../utils/validateCredentials';
 
-function Register({register}) {
+function Register({dispatch}) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [username, setUsername] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState({});
+  const [passwordError, setPasswordError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const missingFieldErr = error.type === 'MISSING_FIELD';
-  const usernameErr = error.type === 'INVALID_USERNAME';
-  const emailErr = error.type === 'INVALID_EMAIL';
-  const passwordErr = error.type === 'INVALID_PASSWORD';
+  const register = (userData) => {
+    setIsLoading(true);
+    setRegisterError('');
+    axios
+        .post('http://localhost:8000',
+            {
+              query: REGISTER_MUTATION,
+              variables: userData,
+            },
+        )
+        .then((res) =>{
+          if (res.data.errors) {
+            setRegisterError(res.data.errors[0].message);
+            setIsLoading(false);
+            return;
+          }
+          setNewUser(res.data.data.register.jwt, dispatch, navigate);
+        })
+        .catch((error) => {
+          console.log(error);
+          setRegisterError('Connection error');
+          setIsLoading(false);
+        });
+  };
 
-  const handleRegister = () => {
-    register({email: email, username: username, password: password}, setError,
-        navigate);
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (isLoading) return;
+    const emailErr = validateEmail(email);
+    const passErr = validatePassword(password);
+    const userErr = validateUsername(username);
+    setEmailError(emailErr);
+    setPasswordError(passErr);
+    setUsernameError(userErr);
+    if (!(emailErr || passErr || userErr)) {
+      register({email: email, username: username, password: password});
+    }
+  };
+
+  const handleInput = (setInput, setInputError, value) => {
+    setRegisterError('');
+    setInputError('');
+    setInput(value);
   };
 
   return (
@@ -38,26 +81,38 @@ function Register({register}) {
           <AuthInfo>
             <AuthCred>
               <Label>Username</Label>
-              <Input error = {usernameErr || missingFieldErr}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  setError({});
-                }}></Input>
+              <InputContainer>
+                <Input error={usernameError || registerError}
+                  onChange={(e) => {
+                    handleInput(setUsername, setUsernameError, e.target.value);
+                  }}>
+                </Input>
+                {usernameError ?
+                <InputError>{usernameError}</InputError> : null}
+              </InputContainer>
               <Label>Email</Label>
-              <Input error = {emailErr || missingFieldErr}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError({});
-                }}></Input>
+              <InputContainer>
+                <Input error={emailError || registerError}
+                  onChange={(e) => {
+                    handleInput(setEmail, setEmailError, e.target.value);
+                  }}>
+                </Input>
+                {emailError ? <InputError>{emailError}</InputError> : null}
+              </InputContainer>
               <Label>Password</Label>
-              <Input error = {passwordErr || missingFieldErr}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError({});
-                }}
-                type="password">
-              </Input>
-              <ErrorContainer>{error ? error.message : null}</ErrorContainer>
+              <InputContainer>
+                <Input error={passwordError || registerError}
+                  onChange={(e) => {
+                    handleInput(setPassword, setPasswordError, e.target.value);
+                  }}
+                  type="password">
+                </Input>
+                {passwordError ?
+                <InputError>{passwordError}</InputError> : null}
+              </InputContainer>
+              <ErrorContainer>
+                {registerError ? registerError : null}
+              </ErrorContainer>
             </AuthCred>
             <RegisterBtnContainer>
               <AuthBtn onClick={handleRegister}>Register</AuthBtn>
@@ -69,4 +124,9 @@ function Register({register}) {
   );
 }
 
-export default connect(null, {register})(Register);
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+});
+
+
+export default connect(null, mapDispatchToProps)(Register);

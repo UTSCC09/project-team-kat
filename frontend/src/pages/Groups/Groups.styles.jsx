@@ -31,7 +31,7 @@ export const AddGrpBtn = styled.button`
     transition: all 0.2s;
 
     &:hover{
-        cursor: pointer;
+        cursor: pointer; 
     }
 `;
 
@@ -132,7 +132,7 @@ export const Backdrop = styled('div')`
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
 `;
 
 export const MoreMembers = styled.div`
@@ -215,22 +215,3 @@ export const PupupText = styled.div`
     border: 2px dotted black;
     padding: 10px;
 `;
-
-/*
-export const ClosePopupBtn = styled.div`
-    position: absolute;
-    right: -40px;
-    top: -80px;
-    background-color: white;
-    font-family: inherit;
-    font-size: 18px;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 10px;
-    transition: all 0.2s;
-
-    &:hover{
-        cursor: pointer;
-    }
-`;
-*/
