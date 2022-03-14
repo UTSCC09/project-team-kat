@@ -2,13 +2,14 @@ import React, {useState, useEffect} from 'react';
 import {PageContainer, HeaderContainer, HeaderText,
   AddGrpBtn, GroupsContainer, Group, GroupName, GroupMember,
   GroupMembersContainer, MoreMembers, AddGrpOptions, AddGrpBtnContainer,
-  AddGrpOption, StyledModal, Backdrop, PopupContainer, PopupInput, PopupBtn,
+  AddGrpOption, PopupInput, PopupBtn,
   PupupText, PopupInputError, PopupInputContainer,
 } from './Groups.styles';
 import axios from 'axios';
 import {GET_GROUPS_QUERY,
   CREATE_GROUP_MUTATION, JOIN_GROUP_MUTATION} from '../../graphql/group.defs';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
+import PopUp from '../../components/PopUp/PopUp';
 
 
 function Groups() {
@@ -250,17 +251,10 @@ function Groups() {
           )
         }
       </GroupsContainer>
-      <StyledModal
-        open={popUp.page ? true : false}
-        onClose={handleClosePopUp}
-        BackdropComponent={Backdrop}
-      >
-        {
-          <PopupContainer>
-            {renderPopupPage()}
-          </PopupContainer>
-        }
-      </StyledModal>
+      <PopUp
+        open={popUp.page ? true : false} handleClose={handleClosePopUp}>
+        {renderPopupPage()}
+      </PopUp>
     </PageContainer>
   );
 }
