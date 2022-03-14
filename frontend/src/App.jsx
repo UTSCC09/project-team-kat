@@ -7,6 +7,7 @@ import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Home from './pages/Home/Home';
+import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
 
 function App({auth: {isAuthenticated}}) {
   return (
@@ -19,6 +20,7 @@ function App({auth: {isAuthenticated}}) {
           element={(isAuthenticated) ? <Navigate to="/" /> : <Register />} />
         <Route path="/*"
           element={(isAuthenticated) ? <Home /> : <Landing />} />
+        <Route path="/canvas" element={<GroupCanvas />} />
       </Routes>
     </div>
   );
