@@ -1,12 +1,17 @@
 import React from 'react';
 
-import {PageContainer, Content} from './PopUp.styles';
+import {StyledModal, PopupContainer, Backdrop} from './PopUp.styles';
 
-function PopUp(props) {
+function PopUp({open, handleClose, children}) {
   return (
-    <PageContainer>
-      <Content>{props.children}</Content>
-    </PageContainer>
+    <StyledModal
+      open={open}
+      onClose={handleClose}
+      BackdropComponent={Backdrop}>
+      <PopupContainer>
+        {children}
+      </PopupContainer>
+    </StyledModal>
   );
 }
 
