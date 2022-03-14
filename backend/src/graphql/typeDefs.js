@@ -21,6 +21,14 @@ module.exports = gql`
         members: [User!]!
         code: String!
     }
+    type Post {
+        id: ID!
+        title: String!
+        message: String!
+        author: String!
+        group: String!
+        fabricObject: String!
+    }
     type JwtToken {
         jwt: ID!
     }
@@ -31,6 +39,7 @@ module.exports = gql`
     type Query {
         getUser(id: ID!): User!
         getGroups(limit: Int, skip: Int): PaginatedGroups!
+        getPostsByGroup(id: ID!): [Post]
     }
     type Mutation {
         register(email: String!, username: String!, 
@@ -40,5 +49,13 @@ module.exports = gql`
         joinGroup(code: String!): Group!
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
+        createPost(
+            title: String!, 
+            message: String!, 
+            author: String!, 
+            group: String!, 
+            fabricObject: String!
+        ): Post
+        deletePost(id: ID!): String!
     }
 `;
