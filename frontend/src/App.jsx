@@ -1,23 +1,35 @@
 import Navbar from './components/Navbar/Navbar';
 import React from 'react';
-import {Route, Routes} from 'react-router-dom';
+import {Route, Routes, Navigate} from 'react-router-dom';
+import {connect} from 'react-redux';
+
 import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
+import Home from './pages/Home/Home';
 
-function App() {
+function App({auth: {isAuthenticated}}) {
   return (
     <div className="App">
       <Navbar />
       <Routes>
-        <Route path="/" element={<Landing />}/>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/canvas" element={<GroupCanvas />} />
+        <Route path="*"
+          element={(isAuthenticated) ? <Home/> : <Landing />}/>
+        <Route path="/login"
+          element={(isAuthenticated) ? <Navigate to="/" /> : <Login />}/>
+        <Route path="/register"
+          element={(isAuthenticated) ? <Navigate to="/" /> : <Register />}/>
+        <Route path="/canvas"
+          element={(isAuthenticated) ? <GroupCanvas /> : <Navigate to="/" />}/>
       </Routes>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+
+export default connect(mapStateToProps)(App);

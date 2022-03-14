@@ -31,26 +31,27 @@ export const AuthCred = styled.div`
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 `;
 
 export const Label = styled.div`
     font-family: "Comfortaa", cursive;
-    color: white;
     font-size: 30px;
     margin-bottom: 20px;
+    color: white;
 `;
 
 export const Input = styled.input`
     max-width: 700px;
     width: 100%;
     border: none;
-    border-bottom: 2px solid white;
+    border-bottom: 2px solid ${(props) => props.error ? 'red' : 'white'};
     outline: none;
     background-color: black;
     font-family: "Comfortaa", cursive;
-    color: white;
     font-size: 30px;
     margin-bottom: 50px;
+    color: ${(props) => props.error ? 'red' : 'white'};
 `;
 
 export const BtnContainer = styled.div`
@@ -96,4 +97,10 @@ export const RegisterBtnContainer = styled.div`
     margin-top: 105px;
     display: flex;
     justify-content: center;
+`;
+
+export const ErrorContainer = styled.div`
+    position: absolute;
+    bottom: 0;
+    color: red;
 `;

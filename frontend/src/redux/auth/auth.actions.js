@@ -7,7 +7,20 @@ import {
 } from './auth.types';
 import {LOGIN_MUTATION, REGISTER_MUTATION} from '../../graphql/auth.defs';
 
-export const register = (userData, navigate) => (dispatch) => {
+const handleToken = (token, navigate, dispatch) => {
+  localStorage.setItem('jwtToken', token);
+  setAuthToken(token);
+  const decoded = jwtDecode(token);
+  dispatch(setCurrentUser(decoded));
+  navigate('/');
+};
+
+const handleError = (error, setError) => {
+  setError({code: error.extensions.code, message: error.message,
+    type: error.extensions.type});
+};
+
+export const register = (userData, setError, navigate) => (dispatch) => {
   axios
       .post('http://localhost:8000',
           {
@@ -15,24 +28,24 @@ export const register = (userData, navigate) => (dispatch) => {
             variables: userData,
           },
       )
-      .then((res) => navigate('/login'));
+      .then((res) => res.data.errors ?
+      handleError(res.data.errors[0], setError) :
+      handleToken(res.data.data.register.jwt, navigate, dispatch),
+      );
 };
 
-export const login = (userData, navigate) => (dispatch) => {
+export const login = (userData, setError, navigate) => (dispatch) => {
   axios
       .post('http://localhost:8000',
           {
             query: LOGIN_MUTATION,
             variables: userData,
           })
-      .then((res) => {
-        const token = res.data.data.login.jwt;
-        localStorage.setItem('jwtToken', token);
-        setAuthToken(token);
-        const decoded = jwtDecode(token);
-        dispatch(setCurrentUser(decoded));
-        navigate('/');
-      });
+      .then((res) =>
+        res.data.errors ?
+      handleError(res.data.errors[0], setError) :
+      handleToken(res.data.data.login.jwt, navigate, dispatch),
+      );
 };
 
 export const logout = (navigate) => (dispatch) => {

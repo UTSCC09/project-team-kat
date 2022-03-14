@@ -1,28 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router';
 import LoginPic from '../../images/login.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
-  Input, BtnContainer, AuthBtn, AuthPicture,
+  Input, BtnContainer, AuthBtn, AuthPicture, ErrorContainer,
   AuthPictureText} from './Auth.styles';
 import {connect} from 'react-redux';
 import {login} from '../../redux/auth/auth.actions';
 
-function Login({auth, login}) {
+function Login({login}) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState({});
 
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate('/');
-    }
-  }, []);
+  const missingFieldErr = error.type === 'MISSING_FIELD';
+  const emailErr = error.type === 'INVALID_EMAIL';
+  const passwordErr = error.type === 'INVALID_PASSWORD';
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    login({email: email, password: password}, navigate);
+    login({email: email, password: password}, setError, navigate);
   };
 
   return (
@@ -32,12 +31,20 @@ function Login({auth, login}) {
           <AuthInfo>
             <AuthCred>
               <Label>Email</Label>
-              <Input onChange={(e) => setEmail(e.target.value)}></Input>
+              <Input error={emailErr || missingFieldErr}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError({});
+                }}></Input>
               <Label>Password</Label>
-              <Input
-                onChange={(e) => setPassword(e.target.value)}
+              <Input error={passwordErr || missingFieldErr}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError({});
+                }}
                 type="password">
               </Input>
+              <ErrorContainer>{error ? error.message : null}</ErrorContainer>
             </AuthCred>
             <BtnContainer>
               <AuthBtn onClick={handleLogin}>Login</AuthBtn>
@@ -55,8 +62,5 @@ function Login({auth, login}) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-});
 
-export default connect(mapStateToProps, {login})(Login);
+export default connect(null, {login})(Login);
