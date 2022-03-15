@@ -1,74 +1,183 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {connect} from 'react-redux';
 import {CanvasArea, Canvas, PageContainer,
-  ToolSection, AddPostDialog} from './GroupCanvas.styles';
+  ToolSection, AddPostDialog, ErrorContainer} from './GroupCanvas.styles';
 import Fab from '@mui/material/Fab';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import {fabric} from 'fabric';
 import FabricService from '../../services/fabric.service';
+import postsAPI from '../../api/posts.api';
 
 function GroupCanvas({auth}) {
   const [canvas, setCanvas] = useState('');
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState({open: false, msg: ''});
 
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
+  const [editMode, setEditMode] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [deleteMode, setDeleteMode] = useState(false);
 
+  const editRef = useRef(editMode);
+  const deleteRef = useRef(deleteMode);
+
   useEffect(() => {
-    setCanvas(FabricService.initCanvas());
+    const newCanvas = FabricService.initCanvas();
+
+    setCanvas(newCanvas);
+    loadPosts(newCanvas);
+
+    dropPostListener(newCanvas);
+    editPostListener(newCanvas);
+    deletePostListener(newCanvas);
   }, []);
 
   useEffect(() => {
-    if (!canvas) return;
+    editRef.current = editMode;
+  }, [editMode]);
 
-    if (deleteMode) {
-      stopAnimations();
-    } else {
-      canvas.getObjects().map((object) => {
-        shakeAnimation(object);
-      });
-    }
+  useEffect(() => {
+    deleteRef.current = deleteMode;
   }, [deleteMode]);
 
-  const handleOpenAddModal = () => setOpenAddModal(true);
-  const handleCloseAddModal = () => setOpenAddModal(false);
 
-  const handleAddPost = () => {
-    const username = auth.user.username;
-    const fabricPost = FabricService.createPost(title, message, username);
+  const loadPosts = async (canvas) => {
+    const posts = await postsAPI.getPostsByGroup(''); // TODO: Fetch group
+    posts.data.data.getPostsByGroup.map((post) => {
+      const fabricObject = FabricService.createPost(post);
+      canvas.add(fabricObject);
+    });
+  };
 
-    canvas.add(fabricPost);
+  const handleAddPost = async () => {
+    if (!title || !message) {
+      return setError('A title and message are required!');
+    }
+
+    const post = {
+      uid: auth.user.id,
+      title: title,
+      message: message,
+      author: auth.user.username,
+      group: '', // TODO: Fetch group id
+      left: 300,
+      top: 300,
+    };
+
+    const savedPost = (await postsAPI.createPost(post)).data.data.createPost;
+    const fabricObject = FabricService.createPost(savedPost);
+
+    canvas.add(fabricObject);
     setOpenAddModal(false);
   };
 
-  const handleDeleteMode = () => {
+  const handleEditPost = async () => {
+    if (!title || !message) {
+      return setError('A title and message are required!');
+    }
+
+    editingPost.title = title;
+    editingPost.message = message;
+
+    const updatedPost = {
+      id: editingPost.postID,
+      uid: editingPost.uid,
+      title: editingPost.title,
+      message: editingPost.message,
+      author: editingPost.author,
+      group: editingPost.groupID,
+      left: editingPost.left,
+      top: editingPost.top,
+    };
+    await postsAPI.updatePost(updatedPost);
+    setEditingPost(null);
+    setOpenAddModal(false);
+    setEditMode(false);
+    setOpenSnackbar({open: false});
+
+    const fabricObject = FabricService.createPost(updatedPost);
+    canvas.remove(editingPost);
+    canvas.add(fabricObject);
+  };
+
+  const dropPostListener = (canvas) => {
+    let isObjectMoving = false;
+
+    canvas.on('object:moving', (_e) => {
+      isObjectMoving = true;
+    });
+
+    canvas.on('mouse:up', async (e) => {
+      if (isObjectMoving) {
+        isObjectMoving = false;
+        const obj = e.target;
+        const post = {
+          id: obj.postID,
+          uid: obj.uid,
+          title: obj.title,
+          message: obj.message,
+          author: obj.author,
+          group: obj.groupID,
+          left: parseInt(obj.left, 10),
+          top: parseInt(obj.top, 10),
+        };
+
+        await postsAPI.updatePost(post);
+      }
+    });
+  };
+
+  const editPostListener = (canvas) => {
+    canvas.on('mouse:down', async (e) => {
+      const inEditMode = editRef.current;
+      const obj = e.target;
+
+      if (inEditMode && obj && obj.name == 'post') {
+        setOpenAddModal(true);
+        setTitle(obj.title);
+        setMessage(obj.message);
+        setEditingPost(obj);
+      }
+    });
+  };
+
+  const deletePostListener = (canvas) => {
+    canvas.on('mouse:down', async (e) => {
+      const inDeleteMode = deleteRef.current;
+      const obj = e.target;
+
+      if (inDeleteMode && obj && obj.name == 'post') {
+        await postsAPI.deletePost(obj.postID);
+        canvas.remove(obj);
+      }
+    });
+  };
+
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    setOpenSnackbar({
+      open: !openSnackbar.open,
+      msg: 'Click on a post to edit!',
+    });
+  };
+
+  const toggleDeleteMode = () => {
     setDeleteMode(!deleteMode);
-  };
-
-  const stopAnimations = () => {
-    fabric.runningAnimations.cancelAll();
-  };
-
-  const shakeAnimation = (fabricPost) => {
-    fabricPost.animate('top', '+=30', {
-      duration: 1000,
-      onChange: canvas.renderAll.bind(canvas),
-      easing: fabric.util.ease.easeOutBounce,
-      onComplete: () => {
-        console.log(deleteMode);
-        if (deleteMode) {
-          shakeAnimation(fabricPost);
-        }
-      },
+    setOpenSnackbar({
+      open: !openSnackbar.open,
+      msg: 'Click on a post to delete!',
     });
   };
 
@@ -77,20 +186,25 @@ function GroupCanvas({auth}) {
       <CanvasArea>
         <Canvas id="canvas"></Canvas>
         <ToolSection>
-          <Fab color="primary" onClick={handleOpenAddModal}>
+          <Fab color="primary" onClick={() => setOpenAddModal(!openAddModal)}>
             <AddIcon />
           </Fab>
-          <Fab color="primary" onClick={handleDeleteMode}>
+          <Fab color="primary" disabled={deleteMode}
+            onClick={toggleEditMode}>
+            { editMode ? <CloseIcon /> : <EditIcon /> }
+          </Fab>
+          <Fab color="primary" disabled={editMode}
+            onClick={toggleDeleteMode}>
             { deleteMode ? <CloseIcon /> : <DeleteIcon /> }
           </Fab>
         </ToolSection>
       </CanvasArea>
       <AddPostDialog
-        onClose={handleCloseAddModal}
+        onClose={() => setOpenAddModal(false)}
         open={openAddModal}
       >
         <DialogTitle id="simple-dialog-title">
-          Create New Post
+          {editMode ? 'Edit Post' : 'Create Post'}
         </DialogTitle>
         <DialogContent>
           <TextField margin="dense" label="Title" fullWidth
@@ -101,12 +215,22 @@ function GroupCanvas({auth}) {
             rows={4}
             onChange={(e) => setMessage(e.target.value)}
           />
+          <ErrorContainer>{error ?? null}</ErrorContainer>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAddModal}>Cancel</Button>
-          <Button onClick={handleAddPost}>Add Post!</Button>
+          <Button onClick={() => setOpenAddModal(false)}>Cancel</Button>
+          <Button onClick={editMode ? handleEditPost : handleAddPost}>
+            {editMode ? 'Edit Post!' : 'Add Post!'}
+          </Button>
         </DialogActions>
       </AddPostDialog>
+      <Snackbar
+        open={openSnackbar.open}
+      >
+        <Alert severity="info">
+          {openSnackbar.msg}
+        </Alert>
+      </Snackbar>
     </PageContainer>
   );
 }

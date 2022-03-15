@@ -35,3 +35,8 @@ export const AddPostDialog = styled(Dialog)`
     margin: 0 auto;
   }
 `;
+
+export const ErrorContainer = styled.div`
+  margin-top: 10px;
+  color: red;
+`;

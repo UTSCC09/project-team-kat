@@ -22,6 +22,13 @@ module.exports = {
       await session.endSession();
     }
   },
+  getGroup: async (groupId) => {
+    try {
+      return await Group.find({id: groupId});
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
   getGroups: async (userId) => {
     try {
       return await Group.find({members: userId});

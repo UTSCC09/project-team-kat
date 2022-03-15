@@ -19,6 +19,11 @@ const getGroupInfo = async (group) => {
 
 module.exports = {
   Query: {
+    getGroup: async (_, {id}, context) => {
+      checkAuth(context);
+      const group = await groupRepository.getGroup(id);
+      return group;
+    },
     getGroups: async (_, params, context) => {
       const user = checkAuth(context);
       const groups = await groupRepository.getGroups(user.id);

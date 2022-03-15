@@ -9,11 +9,23 @@ module.exports = gql`
     }
     type Post {
         id: ID!
+        uid: ID!
         title: String!
         message: String!
         author: String!
         group: String!
-        fabricObject: String!
+        left: Int!
+        top: Int!
+    }
+    input PostInput {
+        id: String!
+        uid: String!
+        title: String!
+        message: String!
+        author: String!
+        group: String!
+        left: Int!
+        top: Int!
     }
     type Group {
         id: ID!
@@ -27,6 +39,7 @@ module.exports = gql`
     type Query {
         getUser(id: ID!): User
         getPostsByGroup(id: ID!): [Post]
+        getGroup(id: ID!): Group!
         getGroups: [Group!]!
     }
     type Mutation {
@@ -35,12 +48,15 @@ module.exports = gql`
         login(email: String!, password: String!): JwtToken!
 
         createPost(
+            uid: String!,
             title: String!, 
             message: String!, 
             author: String!, 
-            group: String!, 
-            fabricObject: String!
-        ): Post
+            group: String!,
+            left: Int!,
+            top: Int!,
+        ): Post!
+        updatePost(post: PostInput!): String!
         deletePost(id: ID!): String!
 
         createGroup(name: String!): Group!
