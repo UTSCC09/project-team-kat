@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 const validateCredentials = require('../../utils/validateCredentials');
 const checkAuth = require('../../utils/checkAuth');
 
-const {ForbiddenError,
-  ApolloError} = require('apollo-server');
+const {ForbiddenError, UserInputError} = require('apollo-server');
 
 dotenv.config();
 
@@ -27,8 +26,7 @@ module.exports = {
     register: async (_, user) => {
       const {email, username, password} = user;
       if (!email || !username || !password) {
-        throw new ApolloError('Missing required field from request!',
-            'BAD_USER_INPUT', {type: 'MISSING_FIELD'});
+        throw new UserInputError('Missing required field from request!');
       }
 
       validateCredentials.validateUsername(username);
@@ -37,8 +35,7 @@ module.exports = {
 
       const foundUser = await userRepository.getUserByEmail(email);
       if (foundUser) {
-        throw new ApolloError('Email already registered. Please sign in.',
-            'BAD_USER_INPUT', {type: 'INVALID_EMAIL'});
+        throw new UserInputError('Email already registered. Please sign in.');
       }
 
       const newUser = await userRepository
@@ -56,22 +53,19 @@ module.exports = {
     login: async (_, user) => {
       const {email, password} = user;
       if (!email || !password) {
-        throw new ApolloError('Missing required field from request!',
-            'BAD_USER_INPUT', {type: 'MISSING_FIELD'});
+        throw new UserInputError('Missing required field from request!');
       }
 
       const foundUser = await userRepository.getUserByEmail(email);
       if (!foundUser) {
-        throw new ApolloError('Invalid email. Please try again.',
-            'BAD_USER_INPUT', {type: 'INVALID_EMAIL'});
+        throw new UserInputError('Invalid email. Please try again.');
       }
 
       const isValidPassword =
         await bcrypt.compare(password, foundUser.password);
 
       if (!isValidPassword) {
-        throw new ApolloError('Invalid password. Please try again.',
-            'BAD_USER_INPUT', {type: 'INVALID_PASSWORD'});
+        throw new UserInputError('Invalid password. Please try again.');
       }
 
       const jwtToken = jwt.sign(

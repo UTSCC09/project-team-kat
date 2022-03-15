@@ -1,15 +1,16 @@
 import React from 'react';
-import {useNavigate} from 'react-router';
 import {Container, Logo, Links, NavLink} from './Navbar.styles';
 import {connect} from 'react-redux';
-import {logout} from '../../redux/auth/auth.actions';
+import {removeOldUser} from '../../utils/AuthToken';
+import {useNavigate} from 'react-router';
 
-function Navbar({auth: {isAuthenticated}, logout}) {
+function Navbar({auth: {isAuthenticated}, dispatch}) {
   const navigate = useNavigate();
 
   const handleSignOut = (e) => {
     e.preventDefault();
-    logout(navigate);
+    removeOldUser(dispatch);
+    navigate('/login');
   };
 
   return (
@@ -29,4 +30,8 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps, {logout})(Navbar);
+const mapDispatchToProsp = (dispatch) => ({
+  dispatch,
+});
+
+export default connect(mapStateToProps, mapDispatchToProsp)(Navbar);

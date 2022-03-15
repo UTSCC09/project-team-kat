@@ -41,6 +41,16 @@ export const Label = styled.div`
     color: white;
 `;
 
+export const InputContainer = styled.div`
+    position: relative;
+`;
+
+export const InputError = styled.div`
+    position: absolute;
+    bottom: 20px;
+    color: red;
+`;
+
 export const Input = styled.input`
     max-width: 700px;
     width: 100%;
@@ -101,6 +111,6 @@ export const RegisterBtnContainer = styled.div`
 
 export const ErrorContainer = styled.div`
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
     color: red;
 `;
