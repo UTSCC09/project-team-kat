@@ -62,7 +62,6 @@ function Groups() {
     setGroups({...groups, isLoading: true});
     axios.post('http://localhost:8000', {query: GET_GROUPS_QUERY}).then((res) => {
       if (res.data.errors) throw Error('Could not fetch group data');
-      console.log(res.data.data.getGroups);
       setGroups({data: res.data.data.getGroups, isLoading: false});
     }).catch((error) => {
       console.log(error);
