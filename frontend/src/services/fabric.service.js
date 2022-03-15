@@ -9,10 +9,15 @@ const FabricService = {
     return new fabric.Canvas('canvas', {
       height: window.innerHeight - 100,
       width: window.innerWidth,
-      backgroundColor: 'pink',
+      backgroundColor: 'white',
     });
   },
-  createPost: (title, message, author) => {
+  setField: (obj, key, value) => {
+    obj.set(key, value);
+    fabric.util.object.extend(obj, {[key]: value});
+    return obj;
+  },
+  createPost: ({id, uid, title, message, author, group, left, top}) => {
     const titleObj = new fabric.Textbox(title, {
       name: 'title',
       width: 280,
@@ -64,8 +69,8 @@ const FabricService = {
 
     const groupOptions = {
       name: 'post',
-      left: 600,
-      top: 600,
+      left: left,
+      top: top,
       hasControls: false,
       transparentCorners: false,
       cornerSize: 7,
@@ -75,8 +80,20 @@ const FabricService = {
       subTargetCheck: true,
     };
 
-    return new fabric.Group([contentObj, titleObj, authorObj, messageObj],
+    const obj = new fabric.Group([contentObj, titleObj, authorObj, messageObj],
         groupOptions);
+
+    return FabricService.attachPostFields(
+        obj, id, uid, title, message, author, group);
+  },
+  attachPostFields: (obj, postID, uid, title, message, author, groupID) => {
+    obj = FabricService.setField(obj, 'uid', uid);
+    obj = FabricService.setField(obj, 'postID', postID);
+    obj = FabricService.setField(obj, 'title', title);
+    obj = FabricService.setField(obj, 'message', message);
+    obj = FabricService.setField(obj, 'author', author);
+    obj = FabricService.setField(obj, 'groupID', groupID);
+    return obj;
   },
 };
 

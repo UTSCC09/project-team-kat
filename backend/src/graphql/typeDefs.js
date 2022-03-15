@@ -23,11 +23,23 @@ module.exports = gql`
     }
     type Post {
         id: ID!
+        uid: ID!
         title: String!
         message: String!
         author: String!
         group: String!
-        fabricObject: String!
+        left: Int!
+        top: Int!
+    }
+    input PostInput {
+        id: String!
+        uid: String!
+        title: String!
+        message: String!
+        author: String!
+        group: String!
+        left: Int!
+        top: Int!
     }
     type JwtToken {
         jwt: ID!
@@ -40,6 +52,7 @@ module.exports = gql`
         getUser(id: ID!): User!
         getGroups(limit: Int, skip: Int): PaginatedGroups!
         getPostsByGroup(id: ID!): [Post]
+        getGroup(id: ID!): Group!
     }
     type Mutation {
         register(email: String!, username: String!, 
@@ -50,12 +63,15 @@ module.exports = gql`
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
         createPost(
+            uid: String!,
             title: String!, 
             message: String!, 
             author: String!, 
-            group: String!, 
-            fabricObject: String!
-        ): Post
+            group: String!,
+            left: Int!,
+            top: Int!,
+        ): Post!
+        updatePost(post: PostInput!): String!
         deletePost(id: ID!): String!
     }
 `;

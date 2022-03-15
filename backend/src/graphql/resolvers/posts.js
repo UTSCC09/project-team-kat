@@ -1,18 +1,18 @@
 const postRepository = require('../../repository/dalPost');
 const userRepository = require('../../repository/dalUser');
+const groupRepository = require('../../repository/dalGroup');
 
 const dotenv = require('dotenv');
 
-const {UserInputError, AuthenticationError} = require('apollo-server');
+const {UserInputError} = require('apollo-server');
+const checkAuth = require('../../utils/checkAuth');
 
 dotenv.config();
 
 module.exports = {
   Query: {
     getPostsByGroup: async (_, {id}, context) => {
-      if (!context.id) {
-        throw new AuthenticationError('User must be authenticated!');
-      }
+      checkAuth(context);
 
       const posts = await postRepository.getPostsByGroup(id);
       return posts;
@@ -21,23 +21,45 @@ module.exports = {
 
   Mutation: {
     createPost: async (_, post) => {
-      const {title, message, author, group, fabricObject} = post;
-      if (!title || !message || !author || !group || !fabricObject) {
+      const {uid, title, message, author, group, left, top} = post;
+      if (!uid || !title || !message || !author || !group || !left || !top) {
         throw new UserInputError('Missing required field from request!');
       }
 
-      const foundAuthor = await userRepository.getUserById(author);
+      const foundAuthor = await userRepository.getUserById(uid);
       if (!foundAuthor) {
         throw new UserInputError('Invalid author id!');
       }
 
-      // TODO: Validate group id is valid too
+      const foundGroup = await groupRepository.getGroup(group);
+      if (!foundGroup) {
+        throw new UserInputError('Invalid group id!');
+      }
 
       const newPost = await postRepository
-          .createPost(title, message, author, group, fabricObject);
+          .createPost(uid, title, message, author, group, left, top);
+
       return newPost;
     },
+    updatePost: async (_, {post}) => {
+      const {uid, title, message, author, group, left, top} = post;
+      if (!uid || !title || !message || !author || !group || !left || !top) {
+        throw new UserInputError('Missing required field from request!');
+      }
 
+      const foundAuthor = await userRepository.getUserById(uid);
+      if (!foundAuthor) {
+        throw new UserInputError('Invalid author id!');
+      }
+
+      const foundGroup = await groupRepository.getGroup(group);
+      if (!foundGroup) {
+        throw new UserInputError('Invalid group id!');
+      }
+
+      await postRepository.updatePost(post.id, post);
+      return 'Successfully Updated!';
+    },
     deletePost: async (_, id) => {
       await postRepository.delete(id);
 

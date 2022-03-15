@@ -31,7 +31,7 @@ module.exports = {
       const foundUser = await User.findById(id);
       return foundUser;
     } catch (err) {
-      throw new ApolloError('Internal Error.');
+      throw new ApolloError('Internal Error.' + err);
     }
   },
 };

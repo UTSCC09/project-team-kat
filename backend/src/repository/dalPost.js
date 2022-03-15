@@ -2,13 +2,21 @@ const Post = require('../models/Post');
 const {ApolloError} = require('apollo-server-errors');
 
 module.exports = {
-  createPost: async (title, message, author, group, fabricObject) => {
+  createPost: async (uid, title, message, author, group, left, top) => {
     try {
-      const post = new Post({title, message, author, group, fabricObject});
+      const post = new Post({uid, title, message, author, group, left, top});
       const savedPost = await post.save();
       return savedPost;
     } catch (err) {
-      throw new ApolloError('Internal Error.');
+      throw new ApolloError('Internal Error. ');
+    }
+  },
+  updatePost: async (id, post) => {
+    try {
+      const updatedPost = await Post.findByIdAndUpdate(id, post);
+      return updatedPost;
+    } catch (err) {
+      throw new ApolloError('Internal Error.' + err);
     }
   },
   getPostsByGroup: async (id) => {

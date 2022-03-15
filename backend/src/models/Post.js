@@ -1,15 +1,17 @@
 const {model, Schema} = require('mongoose');
 
 const postSchema = new Schema({
+  uid: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
-    unique: true,
   },
   message: {
     type: String,
     required: true,
-    unique: false,
   },
   author: {
     type: String,
@@ -19,8 +21,12 @@ const postSchema = new Schema({
     type: String,
     required: true,
   },
-  fabricObject: {
-    type: String,
+  left: {
+    type: Number,
+    required: true,
+  },
+  top: {
+    type: Number,
     required: true,
   },
 },
