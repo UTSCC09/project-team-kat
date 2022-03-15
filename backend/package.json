@@ -22,6 +22,7 @@
     "graphql": "^16.3.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.4",
+    "mongoose-long": "^0.5.1",
     "referral-codes": "^2.0.1"
   }
 }

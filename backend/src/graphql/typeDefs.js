@@ -2,6 +2,13 @@ const gql = require('graphql-tag');
 
 // Define all Query and Mutation Schemas
 module.exports = gql`
+    type Cost {
+        userID: ID!
+        amount: String!
+        applicableUsers: [User!]
+        name: String!
+        groupID: ID!
+    }
     type User {
         id: ID!
         email: String!
@@ -26,5 +33,7 @@ module.exports = gql`
         login(email: String!, password: String!): JwtToken!
         createGroup(name: String!): Group!
         joinGroup(code: String!): Group!
+        createCost(name: String!, amount: String!, 
+            applicableUsers: [String!], groupID: String!): Cost!
     }
 `;
