@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {connect} from 'react-redux';
+import {useParams} from 'react-router-dom';
 import {CanvasArea, Canvas, PageContainer,
   ToolSection, AddPostDialog, ErrorContainer} from './GroupCanvas.styles';
 import Fab from '@mui/material/Fab';
@@ -18,6 +19,8 @@ import FabricService from '../../services/fabric.service';
 import postsAPI from '../../api/posts.api';
 
 function GroupCanvas({auth}) {
+  const {groupID} = useParams();
+
   const [canvas, setCanvas] = useState('');
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState({open: false, msg: ''});
@@ -54,7 +57,7 @@ function GroupCanvas({auth}) {
 
 
   const loadPosts = async (canvas) => {
-    const posts = await postsAPI.getPostsByGroup(''); // TODO: Fetch group
+    const posts = await postsAPI.getPostsByGroup(groupID);
     posts.data.data.getPostsByGroup.map((post) => {
       const fabricObject = FabricService.createPost(post);
       canvas.add(fabricObject);
@@ -71,7 +74,7 @@ function GroupCanvas({auth}) {
       title: title,
       message: message,
       author: auth.user.username,
-      group: '', // TODO: Fetch group id
+      group: groupID,
       left: 300,
       top: 300,
     };
@@ -103,9 +106,9 @@ function GroupCanvas({auth}) {
     };
     await postsAPI.updatePost(updatedPost);
     setEditingPost(null);
-    setOpenAddModal(false);
     setEditMode(false);
     setOpenSnackbar({open: false});
+    handleCloseDialog();
 
     const fabricObject = FabricService.createPost(updatedPost);
     canvas.remove(editingPost);
@@ -181,6 +184,12 @@ function GroupCanvas({auth}) {
     });
   };
 
+  const handleCloseDialog = () => {
+    setTitle('');
+    setMessage('');
+    setOpenAddModal(false);
+  };
+
   return (
     <PageContainer>
       <CanvasArea>
@@ -200,7 +209,7 @@ function GroupCanvas({auth}) {
         </ToolSection>
       </CanvasArea>
       <AddPostDialog
-        onClose={() => setOpenAddModal(false)}
+        onClose={handleCloseDialog}
         open={openAddModal}
       >
         <DialogTitle id="simple-dialog-title">
@@ -209,16 +218,18 @@ function GroupCanvas({auth}) {
         <DialogContent>
           <TextField margin="dense" label="Title" fullWidth
             variant="standard"
+            value={title}
             onChange={(e) => setTitle(e.target.value)}/>
           <TextField margin="dense" label="Message" fullWidth variant="standard"
             multiline
+            value={message}
             rows={4}
             onChange={(e) => setMessage(e.target.value)}
           />
           <ErrorContainer>{error ?? null}</ErrorContainer>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenAddModal(false)}>Cancel</Button>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={editMode ? handleEditPost : handleAddPost}>
             {editMode ? 'Edit Post!' : 'Add Post!'}
           </Button>

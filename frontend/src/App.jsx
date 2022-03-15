@@ -17,7 +17,7 @@ function App({auth: {isAuthenticated}}) {
       <Routes>
         <Route path="/groups/:id/"
           element={(isAuthenticated) ? <GroupDetails /> : <Navigate to="/" />}/>
-        <Route path="/canvas"
+        <Route path="/groups/:groupID/canvas"
           element={(isAuthenticated) ? <GroupCanvas /> : <Navigate to="/" />}/>
         <Route path="/login"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Login />} />
