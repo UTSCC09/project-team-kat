@@ -2,7 +2,7 @@ const checkAuth = require('../../utils/checkAuth');
 const costRepository = require('../../repository/dalCost');
 const userRepository = require('../../repository/dalUser');
 
-const {ApolloError} = require('apollo-server-errors');
+const {UserInputError} = require('apollo-server-errors');
 
 const getCostInfo = async (cost) => {
   return {
@@ -22,8 +22,7 @@ module.exports = {
     createCost: async (_, {name, applicableUsers,
       amount, groupID}, context) => {
       if (!name || !applicableUsers || !amount || !groupID) {
-        throw new ApolloError(`Missing fields!`,
-            'BAD_USER_INPUT', {type: 'INVALID_NAME'});
+        throw new UserInputError("Missing fields!");
       }
       const user = checkAuth(context);
       const newCost = await costRepository.createCost(
