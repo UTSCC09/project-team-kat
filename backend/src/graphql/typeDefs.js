@@ -24,9 +24,13 @@ module.exports = gql`
     type JwtToken {
         jwt: ID!
     }
+    type PaginatedGroups {
+        data: [Group!]!
+        totalItems: Int
+    }
     type Query {
         getUser(id: ID!): User!
-        getGroups: [Group!]!
+        getGroups(limit: Int, skip: Int): PaginatedGroups!
     }
     type Mutation {
         register(email: String!, username: String!, 

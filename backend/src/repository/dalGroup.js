@@ -22,9 +22,17 @@ module.exports = {
       await session.endSession();
     }
   },
-  getGroups: async (userId) => {
+  getPaginatedGroups: async (userId, limit, skip) => {
     try {
-      return await Group.find({members: userId});
+      return await Group.find({members: userId})
+          .sort({'createdAt': -1}).skip(skip*limit).limit(limit);
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
+  getTotalGroups: async (userId) => {
+    try {
+      return await Group.find({members: userId}).count();
     } catch (err) {
       throw new ApolloError('Internal Error.');
     }
