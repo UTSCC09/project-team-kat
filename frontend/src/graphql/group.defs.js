@@ -1,14 +1,18 @@
 
 export const GET_GROUPS_QUERY = `
-query GetGroups {
-  getGroups {
-    id
-    name
-    members {
+query GetGroups($limit: Int, $skip: Int) {
+  getGroups(limit: $limit, skip: $skip) {
+    data {
       id
-      username
+      name
+      members {
+        id
+        email
+        username
+      }
+      code
     }
-    code
+    totalItems
   }
 }
 `;

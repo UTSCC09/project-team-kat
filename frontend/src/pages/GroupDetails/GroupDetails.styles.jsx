@@ -23,7 +23,7 @@ overflow: hidden;
 export const PopupInputLabel = styled.div`
     margin-top: 25px;
 
-`
+`;
 
 export const TransactionCost = styled.div`
     font-family: inherit;
@@ -44,7 +44,7 @@ export const TagHeader = styled.div`
     font-size: 24px;
     color: white;
     margin-right: 25px;
-`
+`;
 
 export const GroupMembersContainer = styled.div`
 display: flex;
@@ -61,4 +61,4 @@ padding: 15px;
 border: 2px solid white;
 border-radius: 78px;
 color: white;
-`
+`;

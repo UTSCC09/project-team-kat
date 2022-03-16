@@ -1,5 +1,12 @@
 import styled from 'styled-components';
 
+export const GroupsFooter = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+`;
+
 export const PageContainer = styled.div`
     margin: 40px;
     font-family: "Comfortaa", cursive;
@@ -68,10 +75,17 @@ export const AddGrpOption = styled.button`
 
 export const GroupsContainer = styled.div`
 margin-top: 40px;
+min-height: 730px;
+`;
+
+export const GroupItemsContainer = styled.div`
 display: flex;
 width: 100%;
 justify-content: space-between;
 flex-wrap: wrap;
+@media (max-width: 885px) {
+    justify-content: space-around;
+  }
 `;
 
 export const Group = styled.div`
@@ -80,6 +94,7 @@ width: 49.5%;
 margin-bottom: 1%;
 padding: 40px;
 display: flex;
+min-width: 400px;
 flex-direction: column;
 border-radius: 20px;
 overflow: hidden;
@@ -171,8 +186,8 @@ export const PopupInputError = styled.div`
      width: 100%;
 `;
 
-export const PupupText = styled.div`
-    margin-top: 20px;
+export const NewGroupCode = styled.div`
+    margin-top: 25px;
     border: 2px dotted black;
-    padding: 10px;
+    padding: 15px;
 `;

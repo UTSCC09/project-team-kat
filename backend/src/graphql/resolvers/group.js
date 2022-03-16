@@ -21,8 +21,20 @@ module.exports = {
   Query: {
     getGroups: async (_, params, context) => {
       const user = checkAuth(context);
-      const groups = await groupRepository.getGroups(user.id);
-      return await Promise.all(groups.map((group) => (getGroupInfo(group))));
+      let limit = params.limit;
+      let skip = params.skip;
+      if (!(limit && skip)) {
+        limit = 6;
+        skip = 0;
+      }
+      const paginatedGroups = await groupRepository
+          .getPaginatedGroups(user.id, limit, skip);
+      const totalItems = await groupRepository.getTotalGroups(user.id);
+      return {
+        totalItems,
+        data: await Promise.all(
+            paginatedGroups.map((group) => (getGroupInfo(group)))),
+      };
     },
   },
   Mutation: {

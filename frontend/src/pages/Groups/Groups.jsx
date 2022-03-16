@@ -1,23 +1,28 @@
 import React, {useState, useEffect} from 'react';
-import {PageContainer, HeaderContainer, HeaderText,
-  AddGrpBtn, GroupsContainer, Group, GroupName, GroupMember,
-  GroupMembersContainer, MoreMembers, AddGrpOptions, AddGrpBtnContainer,
-  AddGrpOption, PopupInput, PopupBtn,
-  PupupText, PopupInputError, PopupInputContainer,
+import {PageContainer, HeaderContainer, HeaderText, GroupsContainer,
+  Group, GroupName, GroupMember, GroupMembersContainer, MoreMembers,
+  AddGrpOptions, AddGrpBtnContainer, AddGrpOption, NewGroupCode, GroupsFooter,
+  GroupItemsContainer,
 } from './Groups.styles';
 import axios from 'axios';
 import {GET_GROUPS_QUERY,
   CREATE_GROUP_MUTATION, JOIN_GROUP_MUTATION} from '../../graphql/group.defs';
+
 import ClickAwayListener from '@mui/base/ClickAwayListener';
+import Pagination from '@mui/material/Pagination';
 import PopUp from '../../components/PopUp/PopUp';
+import AddGroupForm from '../../components/AddGroupForm/AddGroupForm';
+import AddItemBtn from '../../components/AddItemBtn/AddItemBtn';
 
 
 function Groups() {
   const [groups, setGroups] = useState({
     data: [],
+    totalItems: 0,
     isLoading: false,
     error: '',
   });
+  const [groupPage, setGroupPage] = useState(1);
   const [popUp, setPopUp] = useState({
     page: '',
     input: '',
@@ -28,6 +33,8 @@ function Groups() {
     error: '',
   });
 
+  const groupsPerPage = 6;
+
   const [openGroupOptions, setOpenGroupOptions] = useState(false);
 
   const fetchError = 'Failed to fetch data';
@@ -36,6 +43,10 @@ function Groups() {
     if (!newGroup.isLoading) {
       setPopUp({input: '', page: ''});
     }
+  };
+
+  const handleGroupPageChange = (event, value) => {
+    setGroupPage(value);
   };
 
   const resetNewGroup = () =>
@@ -69,20 +80,23 @@ function Groups() {
   };
 
   const getGroups = () => {
-    setGroups({data: [], isLoading: true, error: ''});
+    setGroups({...groups, isLoading: true, error: ''});
     axios.post(
         'http://localhost:8000',
         {
           query: GET_GROUPS_QUERY,
+          variables: {limit: groupsPerPage, skip: groupPage - 1},
         },
     ).then((res) =>
       res.data.errors ?
         setGroups({data: [], isLoading: false,
           error: res.data.errors[0].message}) :
-      setGroups({data: res.data.data.getGroups, isLoading: false, error: ''}))
+      setGroups({data: res.data.data.getGroups.data, isLoading: false,
+        error: '', totalItems: res.data.data.getGroups.totalItems}))
         .catch((error) => {
           console.log(error);
-          setGroups({data: [], isLoading: false, error: fetchError});
+          setGroups({data: [], isLoading: false,
+            error: fetchError, totalItems: 0});
         });
   };
 
@@ -129,63 +143,42 @@ function Groups() {
 
   useEffect(() => {
     getGroups();
-  }, []);
+  }, [groupPage]);
 
   const renderPopupPage = () => {
     switch (popUp.page) {
       case 'CREATE_GROUP':
         return (
-          <>
-            <div>Please enter a group name</div>
-            <PopupInputContainer>
-              <PopupInput
-                error={newGroup.error}
-                onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-              </PopupInput>
-              {
-                newGroup.error ?
-                <PopupInputError>
-                  {newGroup.error}
-                </PopupInputError> :
-                null
-              }
-            </PopupInputContainer>
-            <PopupBtn onClick={() => {
+          <AddGroupForm
+            header={'Please enter a group name'}
+            inputError={newGroup.error}
+            handleInputChange={(e) =>
+              setPopUp({...popUp, input: e.target.value})}
+            handleBtnClick={() => {
               if (!newGroup.isLoading) createGroup();
-            }}>
-              {newGroup.isLoading ? 'Creating Group...' : 'Create Group'}
-            </PopupBtn>
-          </>
+            }}
+            btnText={newGroup.isLoading ? 'Creating Group...' : 'Create Group'}
+          />
         );
       case 'GROUP_CODE':
         return (
           <>
             <div>Your new group code is:</div>
-            <PupupText>{newGroup.data.code}</PupupText>
+            <NewGroupCode>{newGroup.data.code}</NewGroupCode>
           </>
         );
       case 'JOIN_GROUP':
         return (
-          <>
-            <div>Please enter a group code</div>
-            <PopupInputContainer>
-              <PopupInput error={newGroup.error}
-                onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-              </PopupInput>
-              {
-                newGroup.error ?
-                <PopupInputError>
-                  {newGroup.error}
-                </PopupInputError> :
-                null
-              }
-            </PopupInputContainer>
-            <PopupBtn onClick={() => {
+          <AddGroupForm
+            header={'Please enter a group code'}
+            inputError={newGroup.error}
+            handleInputChange={(e) =>
+              setPopUp({...popUp, input: e.target.value})}
+            handleBtnClick={() => {
               if (!newGroup.isLoading) joinGroup();
-            }}>
-              {newGroup.isLoading ? 'Joining Group...' : 'Join Group'}
-            </PopupBtn>
-          </>
+            }}
+            btnText={newGroup.isLoading ? 'Joining Group...' : 'Join Group'}
+          />
         );
     }
   };
@@ -196,8 +189,9 @@ function Groups() {
         <HeaderText>Your Groups</HeaderText>
         <ClickAwayListener onClickAway={() => setOpenGroupOptions(false)}>
           <AddGrpBtnContainer>
-            <AddGrpBtn onClick={() => setOpenGroupOptions(true)}>
-              Add Group</AddGrpBtn>
+            <AddItemBtn
+              handleOnClick={() => setOpenGroupOptions(true)}
+              text={'Add Group'}/>
             {
               openGroupOptions ?
               <AddGrpOptions>
@@ -215,7 +209,8 @@ function Groups() {
         </ClickAwayListener>
       </HeaderContainer>
       <GroupsContainer>
-        {
+        <GroupItemsContainer>
+          {
           groups.isLoading ?
           <div>Loading...</div> :
           (
@@ -249,8 +244,13 @@ function Groups() {
               ))
             )
           )
-        }
+          }
+        </GroupItemsContainer>
       </GroupsContainer>
+      <GroupsFooter>
+        <Pagination count={Math.ceil(groups.totalItems/groupsPerPage)}
+          onChange={handleGroupPageChange}/>
+      </GroupsFooter>
       <PopUp
         open={popUp.page ? true : false} handleClose={handleClosePopUp}>
         {renderPopupPage()}
