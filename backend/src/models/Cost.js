@@ -1,11 +1,11 @@
 const {model, Schema} = require('mongoose');
 
 const costSchema = new Schema({
-  userID: {
+  ownerId: {
     type: String,
     required: true,
   },
-  groupID: {
+  groupId: {
     type: String,
     required: true,
   },

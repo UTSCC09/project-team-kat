@@ -8,8 +8,9 @@ const getCostInfo = async (cost) => {
   return {
     id: cost.id,
     name: cost.name,
-    userId: cost.userID,
+    ownerId: cost.ownerId,
     amount: cost.amount,
+    groupId: cost.groupId,
     applicableUsers: await Promise.all(cost.applicableUsers.map((member) => {
       const memberUser = userRepository.getUserById(member);
       return memberUser;
@@ -20,15 +21,15 @@ const getCostInfo = async (cost) => {
 module.exports = {
   Mutation: {
     createCost: async (_, {name, applicableUsers,
-      amount, groupID}, context) => {
-      if (!name || !applicableUsers || !amount || !groupID) {
-        throw new UserInputError("Missing fields!");
-      }
+      amount, groupId}, context) => {
       const user = checkAuth(context);
+      if (!(name && applicableUsers && amount && groupId)) {
+        throw new UserInputError('Missing fields!');
+      }
       const newCost = await costRepository.createCost(
-          name, amount, user.id, applicableUsers, groupID,
+          name, amount, user.id, applicableUsers, groupId,
       );
-      return getCostInfo(newCost);
+      return await getCostInfo(newCost);
     },
   },
 };
