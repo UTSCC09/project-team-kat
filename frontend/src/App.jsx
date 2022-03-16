@@ -13,9 +13,9 @@ function App({auth: {isAuthenticated}}) {
     <div className="App">
       <Navbar />
       <Routes>
-        <Route path="/login"
+        <Route exact path="/login"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Login />} />
-        <Route path="/register"
+        <Route exact path="/register"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Register />} />
         <Route path="/*"
           element={(isAuthenticated) ? <Home /> : <Landing />} />
