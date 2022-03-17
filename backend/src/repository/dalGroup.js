@@ -24,14 +24,7 @@ module.exports = {
   },
   getGroup: async (groupId) => {
     try {
-      return await Group.find({id: groupId});
-    } catch (err) {
-      throw new ApolloError('Internal Error.');
-    }
-  },
-  getGroups: async (userId) => {
-    try {
-      return await Group.find({id: groupId});
+      return await Group.findById(groupId);
     } catch (err) {
       throw new ApolloError('Internal Error.');
     }

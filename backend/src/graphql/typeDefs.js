@@ -95,16 +95,5 @@ module.exports = gql`
         joinGroup(code: String!): Group!
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
-        createPost(
-            uid: String!,
-            title: String!, 
-            message: String!, 
-            author: String!, 
-            group: String!,
-            left: Int!,
-            top: Int!,
-        ): Post!
-        updatePost(post: PostInput!): String!
-        deletePost(id: ID!): String!
     }
 `;
