@@ -70,16 +70,17 @@ function GroupCanvas({auth}) {
     }
 
     const post = {
-      uid: auth.user.id,
       title: title,
       message: message,
-      author: auth.user.username,
       group: groupID,
       left: 300,
       top: 300,
     };
 
-    const savedPost = (await postsAPI.createPost(post)).data.data.createPost;
+    const res = await postsAPI.createPost(post);
+    const savedPost = res.data.data.createPost;
+
+    savedPost.author = auth.user.username;
     const fabricObject = FabricService.createPost(savedPost);
 
     canvas.add(fabricObject);
@@ -96,11 +97,9 @@ function GroupCanvas({auth}) {
 
     const updatedPost = {
       id: editingPost.postID,
-      uid: editingPost.uid,
+      group: editingPost.groupID,
       title: editingPost.title,
       message: editingPost.message,
-      author: editingPost.author,
-      group: editingPost.groupID,
       left: editingPost.left,
       top: editingPost.top,
     };
@@ -110,6 +109,7 @@ function GroupCanvas({auth}) {
     setOpenSnackbar({open: false});
     handleCloseDialog();
 
+    updatedPost.author = editingPost.author;
     const fabricObject = FabricService.createPost(updatedPost);
     canvas.remove(editingPost);
     canvas.add(fabricObject);
@@ -128,11 +128,9 @@ function GroupCanvas({auth}) {
         const obj = e.target;
         const post = {
           id: obj.postID,
-          uid: obj.uid,
+          group: obj.groupID,
           title: obj.title,
           message: obj.message,
-          author: obj.author,
-          group: obj.groupID,
           left: parseInt(obj.left, 10),
           top: parseInt(obj.top, 10),
         };
@@ -162,7 +160,9 @@ function GroupCanvas({auth}) {
       const obj = e.target;
 
       if (inDeleteMode && obj && obj.name == 'post') {
-        await postsAPI.deletePost(obj.postID);
+        const a = await postsAPI.deletePost({id: obj.postID,
+          group: obj.groupID});
+        console.log(a);
         canvas.remove(obj);
       }
     });

@@ -23,7 +23,7 @@ module.exports = {
       const updatedPost = await Post.findByIdAndUpdate(id, post);
       return updatedPost;
     } catch (err) {
-      throw new ApolloError('Internal Error.' + err);
+      throw new ApolloError('Internal Error.');
     } finally {
       await session.endSession();
     }
@@ -40,7 +40,7 @@ module.exports = {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const deleteRes = await Post.deleteOne({id});
+      const deleteRes = await Post.findByIdAndDelete(id);
       return deleteRes;
     } catch (err) {
       throw new ApolloError('Internal Error.');

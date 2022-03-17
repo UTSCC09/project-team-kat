@@ -17,7 +17,7 @@ const FabricService = {
     fabric.util.object.extend(obj, {[key]: value});
     return obj;
   },
-  createPost: ({id, uid, title, message, author, group, left, top}) => {
+  createPost: ({id, title, message, author, group, left, top}) => {
     const titleObj = new fabric.Textbox(title, {
       name: 'title',
       width: 280,
@@ -84,10 +84,9 @@ const FabricService = {
         groupOptions);
 
     return FabricService.attachPostFields(
-        obj, id, uid, title, message, author, group);
+        obj, id, title, message, author, group);
   },
-  attachPostFields: (obj, postID, uid, title, message, author, groupID) => {
-    obj = FabricService.setField(obj, 'uid', uid);
+  attachPostFields: (obj, postID, title, message, author, groupID) => {
     obj = FabricService.setField(obj, 'postID', postID);
     obj = FabricService.setField(obj, 'title', title);
     obj = FabricService.setField(obj, 'message', message);

@@ -19,12 +19,12 @@ export const createPost = (post) => axios.post(baseURL, {
 
 export const updatePost = (post) => axios.post(baseURL, {
   query: UPDATE_POST_MUTATION,
-  variables: {post},
+  variables: post,
 });
 
-export const deletePost = (id) => axios.post(baseURL, {
+export const deletePost = (post) => axios.post(baseURL, {
   query: DELETE_POST_MUTATION,
-  variables: {id},
+  variables: post,
 });
 
 const postsAPI = {
