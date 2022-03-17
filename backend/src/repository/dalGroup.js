@@ -29,6 +29,13 @@ module.exports = {
       throw new ApolloError('Internal Error.');
     }
   },
+  getGroups: async (userId) => {
+    try {
+      return await Group.find({id: groupId});
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
   getPaginatedGroups: async (userId, limit, skip) => {
     try {
       return await Group.find({members: userId})

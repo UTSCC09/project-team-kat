@@ -13,7 +13,7 @@ function App({auth: {isAuthenticated}}) {
     <div className="App">
       <Navbar />
       <Routes>
-        <Route exact path="/login"
+        <Route path="/login"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Login />} />
         <Route exact path="/register"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Register />} />
