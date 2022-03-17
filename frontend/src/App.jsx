@@ -3,10 +3,13 @@ import React from 'react';
 import {Route, Routes, Navigate} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
-import Home from './pages/Home/Home';
+import ProtectedRoutes from './ProtectedRoutes';
+import Groups from './pages/Groups/Groups';
+import GroupDetails from './pages/GroupDetails/GroupDetails';
+import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
+import Landing from './pages/Landing/Landing';
 
 function App({auth: {isAuthenticated}}) {
   return (
@@ -17,8 +20,21 @@ function App({auth: {isAuthenticated}}) {
           element={(isAuthenticated) ? <Navigate to="/" /> : <Login />} />
         <Route exact path="/register"
           element={(isAuthenticated) ? <Navigate to="/" /> : <Register />} />
-        <Route path="/*"
-          element={(isAuthenticated) ? <Home /> : <Landing />} />
+        <Route exact path="/"
+          element={(isAuthenticated) ?
+          <Navigate to="/groups" /> : <Landing />} />
+
+        <Route element={<ProtectedRoutes/>}>
+
+          <Route exact path={'/groups'}
+            element={<Groups />}/>
+          <Route path="/groups/:id/"
+            element={<GroupDetails />} />
+          <Route path="/groups/:groupID/canvas"
+            element={<GroupCanvas />}/>
+
+        </Route>
+
       </Routes>
     </div>
   );
