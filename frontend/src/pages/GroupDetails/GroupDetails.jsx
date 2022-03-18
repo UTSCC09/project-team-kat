@@ -4,8 +4,8 @@ import {PageContainer, HeaderContainer, HeaderText,
   AddGrpBtn, AddGrpBtnContainer, PopupInput, PopupBtn, PopupInputContainer,
 } from '../Groups/Groups.styles.jsx';
 
-import {GroupsContainer, Transaction, TransactionCost, GroupMember,
-  GroupMembersContainer, TransactionLogger, TagHeader, PopupInputLabel,
+import {GroupsContainer, Transaction, TransactionCost, Tag,
+  GroupMembersContainer, TransactionLogger, PopupInputLabel,
 } from './GroupDetails.styles';
 
 import PopUp from '../../components/PopUp/PopUp.jsx';
@@ -106,8 +106,7 @@ function GroupDetails() {
                   Created by: {transaction.user}
             </TransactionLogger>
             <GroupMembersContainer>
-              <TagHeader>Tagged With: </TagHeader>
-              <GroupMember >{transaction.tags[0]}</GroupMember>
+              <Tag >{transaction.tags[0]}</Tag>
             </GroupMembersContainer>
           </Transaction>
         )))}

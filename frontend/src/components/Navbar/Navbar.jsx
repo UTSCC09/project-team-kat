@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Logo, Links, NavLink} from './Navbar.styles';
+import {Container, Links, NavLink, HomeLink} from './Navbar.styles';
 import {connect} from 'react-redux';
 import {removeOldUser} from '../../utils/AuthToken';
 import {useNavigate} from 'react-router';
@@ -15,7 +15,7 @@ function Navbar({auth: {isAuthenticated}, dispatch}) {
 
   return (
     <Container>
-      <Logo></Logo>
+      <HomeLink to="/">PayMates</HomeLink>
       <Links>
         {!isAuthenticated && <NavLink to="/login">Login</NavLink>}
         {!isAuthenticated && <NavLink to="/register">Sign Up</NavLink>}

@@ -5,6 +5,8 @@ export const GroupsFooter = styled.div`
     display: flex;
     justify-content: center;
     margin: 40px 0;
+    position:fixed;
+    bottom:0;
 `;
 
 export const PageContainer = styled.div`
@@ -31,7 +33,7 @@ export const AddGrpBtn = styled.button`
     background-color: white;
     font-family: inherit;    
     font-size: 24px;
-    padding: 40px;
+    padding: 15px;
     border: 2px solid black;
     border-radius: 78px;
     transition: all 0.2s;
@@ -75,7 +77,6 @@ export const AddGrpOption = styled.button`
 
 export const GroupsContainer = styled.div`
 margin-top: 40px;
-min-height: 730px;
 `;
 
 export const GroupItemsContainer = styled.div`
@@ -90,19 +91,20 @@ flex-wrap: wrap;
 
 export const Group = styled.div`
 background-color: black;
-width: 49.5%;
+width: 32.5%;
 margin-bottom: 1%;
-padding: 40px;
+padding: 20px;
 display: flex;
 min-width: 400px;
 flex-direction: column;
 border-radius: 20px;
 overflow: hidden;
+cursor: pointer;
 `;
 
 export const GroupName = styled.div`
     font-family: inherit;
-    font-size: 36px;
+    font-size: 28px;
     color: white;
 `;
 
@@ -114,8 +116,8 @@ flex-wrap: wrap;
 export const GroupMember = styled.div`
 background-color: transparent;
 font-family: inherit;    
-font-size: 24px;
-padding: 20px;
+font-size: 18px;
+padding: 10px;
 margin-top: 25px;
 border: 2px solid white;
 border-radius: 78px;
