@@ -4,6 +4,7 @@ import {PageContainer, HeaderContainer, HeaderText, GroupsContainer,
   AddGrpOptions, AddGrpBtnContainer, AddGrpOption, NewGroupCode, GroupsFooter,
   GroupItemsContainer,
 } from './Groups.styles';
+import {useNavigate} from 'react-router';
 import axios from 'axios';
 import {GET_GROUPS_QUERY,
   CREATE_GROUP_MUTATION, JOIN_GROUP_MUTATION} from '../../graphql/group.defs';
@@ -16,6 +17,8 @@ import AddItemBtn from '../../components/AddItemBtn/AddItemBtn';
 
 
 function Groups() {
+  const navigate = useNavigate();
+
   const [groups, setGroups] = useState({
     data: [],
     totalItems: 0,
@@ -220,7 +223,8 @@ function Groups() {
               groups.data.length === 0 ?
               <div>No groups found</div> :
               groups.data.map((group) => (
-                <Group key={group.id}>
+                <Group key={group.id}
+                  onClick={() => navigate('/groups/' + group.id)}>
                   <GroupName>
                     {group.name}
                   </GroupName>

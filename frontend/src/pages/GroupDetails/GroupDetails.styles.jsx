@@ -13,7 +13,7 @@ background-color: black;
 width: 32.5%;
 min-width: 400px;
 margin-bottom: 1%;
-padding: 40px;
+padding: 20px;
 display: flex;
 flex-direction: column;
 border-radius: 20px;
@@ -27,23 +27,15 @@ export const PopupInputLabel = styled.div`
 
 export const TransactionCost = styled.div`
     font-family: inherit;
-    font-size: 36px;
+    font-size: 28px;
     color: white;
 `;
 
 export const TransactionLogger = styled.div`
     font-family: inherit;
-    font-size: 24px;
+    font-size: 18px;
     margin-top: 15px;
-    margin-left: 20px;
     color: white;
-`;
-
-export const TagHeader = styled.div`
-    font-family: inherit;
-    font-size: 24px;
-    color: white;
-    margin-right: 25px;
 `;
 
 export const GroupMembersContainer = styled.div`
@@ -58,6 +50,16 @@ background-color: transparent;
 font-family: inherit;    
 font-size: 24px;
 padding: 15px;
+border: 2px solid white;
+border-radius: 78px;
+color: white;
+`;
+
+export const Tag = styled.div`
+background-color: transparent;
+font-family: inherit;    
+font-size: 18px;
+padding: 10px;
 border: 2px solid white;
 border-radius: 78px;
 color: white;
