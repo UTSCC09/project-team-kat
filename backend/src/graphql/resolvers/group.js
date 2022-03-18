@@ -21,7 +21,8 @@ module.exports = {
   Query: {
     getGroup: async (_, {id}, context) => {
       checkAuth(context);
-      const group = await groupRepository.getGroup(id);
+      const groupRaw = await groupRepository.getGroup(id);
+      const group = await getGroupInfo(groupRaw);
       return group;
     },
     getGroups: async (_, params, context) => {

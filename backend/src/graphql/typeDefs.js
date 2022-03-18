@@ -42,6 +42,7 @@ module.exports = gql`
         getGroups(limit: Int, skip: Int): PaginatedGroups!
         getPostsByGroup(id: ID!): [Post]
         getGroup(id: ID!): Group!
+        getCostsByGroup(id: ID!): [Cost]
     }
     type Mutation {
         register(email: String!, username: String!, 

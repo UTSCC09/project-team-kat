@@ -27,6 +27,8 @@ export const HeaderText = styled.div`
 
 export const AddGrpBtnContainer = styled.div`
     position: relative;
+    display: flex;
+    gap: 10px;
 `;
 
 export const AddGrpBtn = styled.button`

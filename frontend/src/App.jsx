@@ -10,6 +10,7 @@ import Groups from './pages/Groups/Groups';
 import GroupDetails from './pages/GroupDetails/GroupDetails';
 import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
 import Landing from './pages/Landing/Landing';
+import GroupFinance from './pages/GroupFinance/GroupFinance';
 
 function App({auth: {isAuthenticated}}) {
   return (
@@ -32,6 +33,8 @@ function App({auth: {isAuthenticated}}) {
             element={<GroupDetails />} />
           <Route path="/groups/:groupID/canvas"
             element={<GroupCanvas />}/>
+          <Route path="/groups/:groupID/finances"
+            element={<GroupFinance />}/>
 
         </Route>
 
