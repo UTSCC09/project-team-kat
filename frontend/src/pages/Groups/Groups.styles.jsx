@@ -82,7 +82,7 @@ margin-top: 40px;
 export const GroupItemsContainer = styled.div`
 display: flex;
 width: 100%;
-justify-content: space-between;
+gap: 15px;
 flex-wrap: wrap;
 @media (max-width: 885px) {
     justify-content: space-around;
