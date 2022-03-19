@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {PageContainer, HeaderContainer, HeaderText,
   AddGrpBtn, AddGrpBtnContainer,
 } from '../Groups/Groups.styles.jsx';
@@ -15,6 +15,7 @@ import groupsAPI from '../../api/groups.api.js';
 
 function GroupDetails({auth}) {
   const {id} = useParams();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
 
@@ -128,6 +129,8 @@ function GroupDetails({auth}) {
       <HeaderContainer>
         <HeaderText>{!loading && group.name}</HeaderText>
         <AddGrpBtnContainer>
+          <AddGrpBtn onClick={() => navigate('/groups/' + id + '/finances')}>
+              View Finances</AddGrpBtn>
           <AddGrpBtn onClick={() => {
             setPopUp({...popUp, page: 'ADD_COST'});
           }}>
