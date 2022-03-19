@@ -8,6 +8,7 @@ module.exports = {
   Query: {
     ...userResolvers.Query,
     ...groupResolvers.Query,
+    ...costResolvers.Query,
     ...postResolvers.Query,
   },
   Mutation: {

@@ -21,6 +21,22 @@ const getCostInfo = async (cost) => {
 };
 
 module.exports = {
+  Query: {
+    getCostsByGroup: async (_, {id}, context) => {
+      const user = checkAuth(context);
+
+      const foundGroup = await groupRepository.getGroup(id);
+      if (!foundGroup) {
+        throw new UserInputError(`Group with id: ${id} not found`);
+      } else if (!foundGroup.members.includes(user.id)) {
+        throw new ForbiddenError('Access denied');
+      }
+
+      const rawCosts = await costRepository.getCostsByGroup(id);
+      const costs = await Promise.all(rawCosts.map((a) => getCostInfo(a)));
+      return costs;
+    },
+  },
   Mutation: {
     createCost: async (_, {name, applicableUsers,
       amount, groupId}, context) => {

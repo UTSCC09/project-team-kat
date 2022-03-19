@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const {ApolloError} = require('apollo-server-errors');
 
 module.exports = {
+  getCostsByGroup: async (id) => {
+    const costs = await Cost.find({groupId: id});
+    return costs;
+  },
   createCost: async (name, amount, ownerId, applicableUsers, groupId) => {
     const session = await mongoose.startSession();
     session.startTransaction();
