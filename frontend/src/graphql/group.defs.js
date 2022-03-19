@@ -17,6 +17,20 @@ query GetGroups($limit: Int, $skip: Int) {
 }
 `;
 
+export const GET_GROUP_QUERY = `
+query getGroup($id: ID!) {
+  getGroup(id: $id) {
+    id
+    name
+    members {
+      id
+      email
+      username
+    }
+  }
+}
+`;
+
 export const CREATE_GROUP_MUTATION = `
 mutation Mutation($name: String!) {
   createGroup(name: $name) {

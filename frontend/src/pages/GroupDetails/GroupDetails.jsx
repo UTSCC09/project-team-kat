@@ -9,8 +9,12 @@ import {GroupsContainer, Transaction, TransactionCost, Tag,
 } from './GroupDetails.styles';
 
 import PopUp from '../../components/PopUp/PopUp.jsx';
+import {useNavigate, useParams} from 'react-router-dom';
 
 function GroupDetails() {
+  const navigate = useNavigate();
+  const {id} = useParams();
+
   const [popUp, setPopUp] = useState({
     page: '',
     input: '',
@@ -86,6 +90,8 @@ function GroupDetails() {
       <HeaderContainer>
         <HeaderText>{mockGroup.name}</HeaderText>
         <AddGrpBtnContainer>
+          <AddGrpBtn onClick={() => navigate('/groups/' + id + '/finances')}>
+              View Finances</AddGrpBtn>
           <AddGrpBtn onClick={() => {
             setPopUp({...popUp, page: 'JOIN_GROUP'});
           }}>
