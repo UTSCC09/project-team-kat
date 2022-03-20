@@ -6,10 +6,12 @@ import costsAPI from '../../api/costs.api';
 import FinanceCard from '../../components/FinanceCard/FinanceCard';
 import {HeaderContainer, HeaderText} from '../Groups/Groups.styles';
 import {FinanceContainer, CardContainer} from './GroupFinance.styles';
+import {CircularProgress} from '@mui/material';
 
 function GroupFinance({auth}) {
   const {groupID} = useParams();
 
+  const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState({});
   const [members, setMembers] = useState([]);
 
@@ -26,6 +28,7 @@ function GroupFinance({auth}) {
 
     calcCostAmounts(costs, members);
     setMembers(members);
+    setLoading(false);
   }, []);
 
   const calcCostAmounts = (costs, members) => {
@@ -36,17 +39,17 @@ function GroupFinance({auth}) {
 
       if (cost.ownerId == auth.user.id) {
         if (ownerObj.amountOwed) {
-          ownerObj.amountOwed += cost.amount;
+          ownerObj.amountOwed += parseFloat(cost.amount);
         } else {
-          ownerObj.amountOwed = cost.amount;
+          ownerObj.amountOwed = parseFloat(cost.amount);
         }
 
         cost.applicableUsers.map((ower) => {
           const owerObj = members.find((obj) => obj.id == ower.id);
           if (owerObj.amountOwing) {
-            owerObj.amountOwing += cost.amount / numOwers;
+            owerObj.amountOwing += parseFloat(cost.amount / numOwers);
           } else {
-            owerObj.amountOwing = cost.amount / numOwers;
+            owerObj.amountOwing = parseFloat(cost.amount / numOwers);
           }
         });
       }
@@ -62,14 +65,14 @@ function GroupFinance({auth}) {
         // if im the ower
         if (ower.id == auth.user.id) {
           if (owerObj.amountOwing) {
-            owerObj.amountOwing += cost.amount / numOwers;
+            owerObj.amountOwing += parseFloat(cost.amount / numOwers);
           } else {
-            owerObj.amountOwing = cost.amount / numOwers;
+            owerObj.amountOwing = parseFloat(cost.amount / numOwers);
           }
           if (ownerObj.amountOwed) {
-            ownerObj.amountOwed += cost.amount / numOwers;
+            ownerObj.amountOwed += parseFloat(cost.amount / numOwers);
           } else {
-            ownerObj.amountOwed = cost.amount / numOwers;
+            ownerObj.amountOwed = parseFloat(cost.amount / numOwers);
           }
         }
       });
@@ -89,11 +92,13 @@ function GroupFinance({auth}) {
 
   return (
     <FinanceContainer>
-      <HeaderContainer>
+      {!loading && <HeaderContainer>
         <HeaderText>{group.name} - Finances</HeaderText>
-      </HeaderContainer>
-      <CardContainer>{members && members.map((member) =>
-        <FinanceCard key={member.id} group={group} member={member}/>)}
+      </HeaderContainer>}
+      <CardContainer>
+        {loading && <CircularProgress style={{margin: 'auto'}}/>}
+        {!loading && members && members.map((member) =>
+          <FinanceCard key={member.id} group={group} member={member}/>)}
       </CardContainer>
     </FinanceContainer>
   );

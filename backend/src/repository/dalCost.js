@@ -3,9 +3,21 @@ const mongoose = require('mongoose');
 const {ApolloError} = require('apollo-server-errors');
 
 module.exports = {
-  getCostsByGroup: async (id) => {
+  getAllCostsByGroup: async (id) => {
     const costs = await Cost.find({groupId: id});
     return costs;
+  },
+  getPaginatedCostsByGroup: async (id, limit, skip) => {
+    const costs = await Cost.find({groupId: id})
+        .sort({'createdAt': -1}).skip(skip*limit).limit(limit);
+    return costs;
+  },
+  getTotalCostsByGroup: async (id) => {
+    try {
+      return await Cost.find({groupId: id}).count();
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
   },
   createCost: async (name, amount, ownerId, applicableUsers, groupId) => {
     const session = await mongoose.startSession();

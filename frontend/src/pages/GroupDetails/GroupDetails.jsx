@@ -1,86 +1,140 @@
-import React, {useState} from 'react';
-
+import React, {useState, useEffect} from 'react';
+import {connect} from 'react-redux';
+import {useParams, useNavigate} from 'react-router-dom';
 import {PageContainer, HeaderContainer, HeaderText,
-  AddGrpBtn, AddGrpBtnContainer, PopupInput, PopupBtn, PopupInputContainer,
+  AddGrpBtn, AddGrpBtnContainer, GroupsFooter,
 } from '../Groups/Groups.styles.jsx';
-
-import {GroupsContainer, Transaction, TransactionCost, Tag,
-  GroupMembersContainer, TransactionLogger, PopupInputLabel,
+import CircularProgress from '@mui/material/CircularProgress';
+import {GroupsContainer, Transaction, TransactionCost, TransactionLogger,
 } from './GroupDetails.styles';
 
 import PopUp from '../../components/PopUp/PopUp.jsx';
-import {useNavigate, useParams} from 'react-router-dom';
+import Pagination from '@mui/material/Pagination';
+import AddCostForm from '../../components/AddCostForm/AddCostForm.jsx';
+import costsAPI from '../../api/costs.api.js';
+import groupsAPI from '../../api/groups.api.js';
 
-function GroupDetails() {
-  const navigate = useNavigate();
+function GroupDetails({auth}) {
   const {id} = useParams();
+  const navigate = useNavigate();
+  const pageSize = 9;
+
+  const [loading, setLoading] = useState(true);
+
+  const [group, setGroup] = useState({});
+  const [costs, setCosts] = useState([]);
+  const [totalCosts, setTotalCosts] = useState(0);
+  const [costPage, setCostPage] = useState(1);
+
+  const [newCost, setNewCost] = useState({
+    data: null,
+    isLoading: false,
+    error: '',
+  });
 
   const [popUp, setPopUp] = useState({
     page: '',
     input: '',
   });
 
-  const mockGroup = {
-    name: 'Homies V2',
-    isLoading: false,
-    transactions: [
-      {
-        id: 'a',
-        cost: '$25.23',
-        name: 'Groceries',
-        user: 'keshavaa',
-        tags: ['Grocery'],
-      },
-      {
-        id: 'b',
-        cost: '$30.23',
-        name: 'Gas Bill',
-        user: 'Ammar',
-        tags: ['Bills'],
-      },
-      {
-        id: 'c',
-        cost: '$3000',
-        name: 'Rent',
-        user: 'keshavaa',
-        tags: ['Rent'],
-      },
-    ],
+  useEffect(async () => {
+    await loadCosts();
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadCosts();
+  }, [costPage]);
+
+  const loadCosts = async () => {
+    const rawGroup = await groupsAPI.getGroup(id);
+    const group = rawGroup.data.data.getGroup;
+
+    const costs = [];
+    const rawCosts = await costsAPI
+        .getPaginatedCostsByGroup(id, pageSize, costPage - 1);
+
+    rawCosts.data.data.getPaginatedCostsByGroup.data.map((rawCost) => {
+      const ownerId = rawCost.ownerId;
+      const ownerName = group.members.find((mem) => mem.id == ownerId).username;
+      costs.push({...rawCost, owner: ownerName});
+    });
+
+    setTotalCosts(rawCosts.data.data.getPaginatedCostsByGroup.totalItems);
+    setGroup(group);
+    setCosts(costs);
+  };
+
+  const handleCostPageChange = (_event, value) => {
+    setCostPage(value);
   };
 
   const handleClose = () => {
     setPopUp({input: '', page: ''});
+    setNewCost({...newCost, error: ''});
+  };
+
+  const createCost = async () => {
+    const cost = newCost.data;
+
+    if (!cost || !cost.name || !cost.amount || !cost.applicableUsers) {
+      setNewCost({...newCost, error: 'Fill in all fields!'});
+      return;
+    } else if (!isNumeric(cost.amount)) {
+      setNewCost({...newCost, error: 'Amount must be a numeric value!'});
+      return;
+    }
+
+    const payload = {
+      name: cost.name,
+      amount: cost.amount,
+      applicableUsers: cost.applicableUsers.map((user) => user.id),
+      groupId: id,
+    };
+
+    setNewCost({...newCost, isLoading: true});
+    await costsAPI.createCost(payload)
+        .then(async (res) => {
+          if (res.data.errors) {
+            setNewCost({...newCost, isLoading: false});
+            setNewCost({...newCost, error: res.data.errors[0].message});
+            return;
+          }
+          await loadCosts();
+          setNewCost({...newCost, isLoading: false});
+          setNewCost({...newCost, error: ''});
+          handleClose();
+        }).catch((error) => {
+          setNewCost({...newCost, isLoading: false});
+          setNewCost({...newCost, error: error.toString()});
+        });
+  };
+
+  const isNumeric = (str) => {
+    if (typeof str != 'string') return false;
+    return !isNaN(str) &&
+           !isNaN(parseFloat(str));
   };
 
   const renderPopupPage = () => {
     return (
-      <>
-        <div>{'Please enter the cost\'s name'}</div>
-        <PopupInputContainer>
-          <PopupInput
-            onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-          </PopupInput>
-          {/* <PopupInputError>
-                    {newGroup.error ? newGroup.error.message : null}
-                  </PopupInputError> */}
-        </PopupInputContainer>
-        <PopupInputLabel>
-          {'Please enter the cost\'s amount (numerical value)'}
-        </PopupInputLabel>
-        <PopupInputContainer>
-          <PopupInput
-            onChange={(e) => setPopUp({...popUp, input: e.target.value})}>
-          </PopupInput>
-          {/* <PopupInputError>
-                    {newGroup.error ? newGroup.error.message : null}
-                  </PopupInputError> */}
-        </PopupInputContainer>
-        <PopupBtn onClick={() => {
-          //   if (!newGroup.isLoading) createGroup();
-        }}>
-          {/* {newGroup.isLoading ? 'Creating Group...' : 'Create Group'} */}
-        </PopupBtn>
-      </>
+      <AddCostForm
+        users={group.members.filter((usr) => usr.id != auth.user.id)}
+        inputError={newCost.error}
+        handleNameChange={(e) =>
+          setNewCost({...newCost, data: {...newCost.data,
+            name: e.target.value}})}
+        handleAmountChange={(e) =>
+          setNewCost({...newCost, data: {...newCost.data,
+            amount: e.target.value}})}
+        handleUsersChange={(e) =>
+          setNewCost({...newCost, data: {...newCost.data,
+            applicableUsers: e.target.value}})}
+        handleBtnClick={() => {
+          if (!newCost.isLoading) createCost();
+        }}
+        btnText={newCost.isLoading ? 'Creating Cost...' : 'Create Cost'}
+      />
     );
   };
 
@@ -88,43 +142,48 @@ function GroupDetails() {
   return (
     <PageContainer>
       <HeaderContainer>
-        <HeaderText>{mockGroup.name}</HeaderText>
-        <AddGrpBtnContainer>
+        <HeaderText>{!loading && group.name}</HeaderText>
+        {!loading && <AddGrpBtnContainer>
           <AddGrpBtn onClick={() => navigate('/groups/' + id + '/finances')}>
               View Finances</AddGrpBtn>
           <AddGrpBtn onClick={() => {
-            setPopUp({...popUp, page: 'JOIN_GROUP'});
+            setPopUp({...popUp, page: 'ADD_COST'});
           }}>
               Add Cost</AddGrpBtn>
-        </AddGrpBtnContainer>
+        </AddGrpBtnContainer>}
       </HeaderContainer>
       <GroupsContainer>
-        {mockGroup.isLoading ?
-        <div>Loading...</div> :
-        (mockGroup.transactions.length === 0 ?
-        <div>No groups found</div> :
-        mockGroup.transactions.map((transaction) => (
-          <Transaction key={transaction.id}>
+        {loading && <CircularProgress />}
+        {!loading && costs.length != 0 &&
+        costs.map((cost) => (
+          <Transaction key={cost.id}>
             <TransactionCost>
-              {transaction.name} - {transaction.cost}
+              {cost.name} - ${cost.amount}
             </TransactionCost>
             <TransactionLogger>
-                  Created by: {transaction.user}
+                  Created by: {cost.owner}
             </TransactionLogger>
-            <GroupMembersContainer>
-              <Tag >{transaction.tags[0]}</Tag>
-            </GroupMembersContainer>
           </Transaction>
-        )))}
+        ))}
+        {!loading && costs.length == 0 &&
+        <div>No costs created!</div>}
       </GroupsContainer>
-      <PopUp
+      <GroupsFooter>
+        <Pagination count={Math.ceil(totalCosts/pageSize)}
+          onChange={handleCostPageChange}/>
+      </GroupsFooter>
+      {!loading && <PopUp
         open={popUp.page ? true : false}
-        onClose={handleClose}
+        handleClose={handleClose}
       >
         {renderPopupPage()}
-      </PopUp>
+      </PopUp>}
     </PageContainer>
   );
 }
 
-export default GroupDetails;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, null)(GroupDetails);

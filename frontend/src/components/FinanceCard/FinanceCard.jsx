@@ -5,6 +5,11 @@ import {AmountOwingContainer, AmountText,
 import {GroupName} from '../../pages/Groups/Groups.styles';
 
 function FinanceCard({member, auth}) {
+  const amountOwed = member.amountOwed ?
+    parseFloat(member.amountOwed).toFixed(2) : 0;
+  const amountOwing = member.amountOwing ?
+    parseFloat(member.amountOwing).toFixed(2) : 0;
+
   return (
     <Card>
       <GroupName>
@@ -14,28 +19,28 @@ function FinanceCard({member, auth}) {
       <AmountOwingContainer>
         <AmountText>They Owe You (Total):</AmountText>
         <AmountValue style={{color: '#3BFB4F'}}>
-          ${member.amountOwed ?? 0}
+          ${amountOwed ?? 0}
         </AmountValue>
       </AmountOwingContainer>}
       {member.id == auth.user.id &&
       <AmountOwingContainer>
         <AmountText>You Owe (Total):</AmountText>
         <AmountValue style={{color: 'red'}}>
-          ${member.amountOwing ?? 0}
+          ${amountOwing ?? 0}
         </AmountValue>
       </AmountOwingContainer>}
       {member.id != auth.user.id &&
       <AmountOwingContainer>
         <AmountText>Owes You:</AmountText>
         <AmountValue style={{color: '#3BFB4F'}}>
-          ${member.amountOwing ?? 0}
+          ${amountOwing ?? 0}
         </AmountValue>
       </AmountOwingContainer>}
       {member.id != auth.user.id &&
       <AmountOwingContainer>
         <AmountText>You Owe:</AmountText>
         <AmountValue style={{color: 'red'}}>
-          ${member.amountOwed ?? 0}
+          ${amountOwed ?? 0}
         </AmountValue>
       </AmountOwingContainer>}
     </Card>
