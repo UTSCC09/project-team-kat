@@ -2,7 +2,11 @@ import React, {useEffect, useState, useRef} from 'react';
 import {connect} from 'react-redux';
 import {useParams} from 'react-router-dom';
 import {CanvasArea, Canvas, PageContainer,
-  ToolSection, AddPostDialog, ErrorContainer} from './GroupCanvas.styles';
+  ToolSection, AddPostDialog, ErrorContainer,
+  BreadcrumbSection} from './GroupCanvas.styles';
+import Typography from '@mui/material/Typography';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 import Fab from '@mui/material/Fab';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -17,10 +21,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FabricService from '../../services/fabric.service';
 import postsAPI from '../../api/posts.api';
+import groupsAPI from '../../api/groups.api';
 
 function GroupCanvas({auth}) {
   const {groupID} = useParams();
 
+  const [group, setGroup] = useState({});
   const [canvas, setCanvas] = useState('');
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState({open: false, msg: ''});
@@ -36,8 +42,11 @@ function GroupCanvas({auth}) {
   const editRef = useRef(editMode);
   const deleteRef = useRef(deleteMode);
 
-  useEffect(() => {
+  useEffect(async () => {
     const newCanvas = FabricService.initCanvas();
+
+    const res = await groupsAPI.getGroup(groupID);
+    setGroup(res.data.data.getGroup);
 
     setCanvas(newCanvas);
     loadPosts(newCanvas);
@@ -162,7 +171,6 @@ function GroupCanvas({auth}) {
       if (inDeleteMode && obj && obj.name == 'post') {
         const a = await postsAPI.deletePost({id: obj.postID,
           group: obj.groupID});
-        console.log(a);
         canvas.remove(obj);
       }
     });
@@ -194,6 +202,21 @@ function GroupCanvas({auth}) {
     <PageContainer>
       <CanvasArea>
         <Canvas id="canvas"></Canvas>
+        <BreadcrumbSection>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link underline="hover" color="inherit" href="/groups">
+            Groups
+            </Link>
+            <Link
+              underline="hover"
+              color="inherit"
+              href={'/groups/' + groupID}
+            >
+              {group && group.name}
+            </Link>
+            <Typography color="text.primary">Canvas</Typography>
+          </Breadcrumbs>
+        </BreadcrumbSection>
         <ToolSection>
           <Fab color="primary" onClick={() => setOpenAddModal(!openAddModal)}>
             <AddIcon />

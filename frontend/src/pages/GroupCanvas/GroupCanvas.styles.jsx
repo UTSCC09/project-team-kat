@@ -15,6 +15,16 @@ export const CanvasArea = styled.div`
 export const Canvas = styled.canvas`
 `;
 
+export const BreadcrumbSection = styled.div`
+  position: absolute;
+  left: 5%;
+  top: 5%;
+
+  background-color: whitesmoke;
+  padding: 15px;
+  border-radius: 30px;
+`;
+
 export const ToolSection = styled.div`
   display: flex;
   flex-direction: column;
