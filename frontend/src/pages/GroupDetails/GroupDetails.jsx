@@ -14,6 +14,8 @@ import AddCostForm from '../../components/AddCostForm/AddCostForm.jsx';
 import costsAPI from '../../api/costs.api.js';
 import groupsAPI from '../../api/groups.api.js';
 
+import {Link, Breadcrumbs} from '@mui/material';
+
 function GroupDetails({auth}) {
   const {id} = useParams();
   const navigate = useNavigate();
@@ -142,8 +144,22 @@ function GroupDetails({auth}) {
   return (
     <PageContainer>
       <HeaderContainer>
-        <HeaderText>{!loading && group.name}</HeaderText>
+        {!loading &&
+        <Breadcrumbs aria-label="breadcrumb" sx={{
+          '& .MuiBreadcrumbs-separator': {
+            fontSize: '25px',
+          },
+        }} fontFamily="Comfortaa" color="black">
+          <Link underline="hover" color="inherit"
+            href={`/groups`} >
+            <HeaderText>groups</HeaderText>
+          </Link>
+          <HeaderText>{group.name} : {group.code}</HeaderText>
+        </Breadcrumbs>
+        }
         {!loading && <AddGrpBtnContainer>
+          <AddGrpBtn onClick={() => navigate('/groups/' + id + '/canvas')}>
+              View Posts</AddGrpBtn>
           <AddGrpBtn onClick={() => navigate('/groups/' + id + '/finances')}>
               View Finances</AddGrpBtn>
           <AddGrpBtn onClick={() => {

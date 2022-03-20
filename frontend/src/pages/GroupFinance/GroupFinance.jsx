@@ -6,7 +6,7 @@ import costsAPI from '../../api/costs.api';
 import FinanceCard from '../../components/FinanceCard/FinanceCard';
 import {HeaderContainer, HeaderText} from '../Groups/Groups.styles';
 import {FinanceContainer, CardContainer} from './GroupFinance.styles';
-import {CircularProgress} from '@mui/material';
+import {CircularProgress, Link, Breadcrumbs} from '@mui/material';
 
 function GroupFinance({auth}) {
   const {groupID} = useParams();
@@ -93,7 +93,21 @@ function GroupFinance({auth}) {
   return (
     <FinanceContainer>
       {!loading && <HeaderContainer>
-        <HeaderText>{group.name} - Finances</HeaderText>
+        <Breadcrumbs aria-label="breadcrumb" sx={{
+          '& .MuiBreadcrumbs-separator': {
+            fontSize: '25px',
+          },
+        }} fontFamily="Comfortaa" color="black">
+          <Link underline="hover" color="inherit"
+            href={`/groups`} >
+            <HeaderText>groups</HeaderText>
+          </Link>
+          <Link underline="hover" color="inherit"
+            href={`/groups/${groupID}`} >
+            <HeaderText>{group.name}</HeaderText>
+          </Link>
+          <HeaderText>Finances</HeaderText>
+        </Breadcrumbs>
       </HeaderContainer>}
       <CardContainer>
         {loading && <CircularProgress style={{margin: 'auto'}}/>}

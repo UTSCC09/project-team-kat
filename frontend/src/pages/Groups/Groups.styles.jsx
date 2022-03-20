@@ -93,8 +93,7 @@ flex-wrap: wrap;
 
 export const Group = styled.div`
 background-color: black;
-width: 32.5%;
-margin-bottom: 1%;
+width: 32.8%;
 padding: 20px;
 display: flex;
 min-width: 400px;

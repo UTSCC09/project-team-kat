@@ -27,6 +27,7 @@ query getGroup($id: ID!) {
       email
       username
     }
+    code
   }
 }
 `;

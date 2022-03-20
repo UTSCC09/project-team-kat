@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 
 export const AuthWrapper = styled.div`
-    min-height: calc(100vh - 100px);
+    height: 100vh;
     background-color: #2F2F2F;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
 `;
 
 export const AuthContainer = styled.div`
