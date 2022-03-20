@@ -2,13 +2,14 @@ import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {useParams, useNavigate} from 'react-router-dom';
 import {PageContainer, HeaderContainer, HeaderText,
-  AddGrpBtn, AddGrpBtnContainer,
+  AddGrpBtn, AddGrpBtnContainer, GroupsFooter,
 } from '../Groups/Groups.styles.jsx';
 import CircularProgress from '@mui/material/CircularProgress';
 import {GroupsContainer, Transaction, TransactionCost, TransactionLogger,
 } from './GroupDetails.styles';
 
 import PopUp from '../../components/PopUp/PopUp.jsx';
+import Pagination from '@mui/material/Pagination';
 import AddCostForm from '../../components/AddCostForm/AddCostForm.jsx';
 import costsAPI from '../../api/costs.api.js';
 import groupsAPI from '../../api/groups.api.js';
@@ -16,11 +17,14 @@ import groupsAPI from '../../api/groups.api.js';
 function GroupDetails({auth}) {
   const {id} = useParams();
   const navigate = useNavigate();
+  const pageSize = 9;
 
   const [loading, setLoading] = useState(true);
 
   const [group, setGroup] = useState({});
   const [costs, setCosts] = useState([]);
+  const [totalCosts, setTotalCosts] = useState(0);
+  const [costPage, setCostPage] = useState(1);
 
   const [newCost, setNewCost] = useState({
     data: null,
@@ -38,20 +42,31 @@ function GroupDetails({auth}) {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    loadCosts();
+  }, [costPage]);
+
   const loadCosts = async () => {
     const rawGroup = await groupsAPI.getGroup(id);
     const group = rawGroup.data.data.getGroup;
 
     const costs = [];
-    const rawCosts = await costsAPI.getCostsByGroup(id);
-    rawCosts.data.data.getCostsByGroup.map((rawCost) => {
+    const rawCosts = await costsAPI
+        .getPaginatedCostsByGroup(id, pageSize, costPage - 1);
+
+    rawCosts.data.data.getPaginatedCostsByGroup.data.map((rawCost) => {
       const ownerId = rawCost.ownerId;
       const ownerName = group.members.find((mem) => mem.id == ownerId).username;
       costs.push({...rawCost, owner: ownerName});
     });
 
+    setTotalCosts(rawCosts.data.data.getPaginatedCostsByGroup.totalItems);
     setGroup(group);
     setCosts(costs);
+  };
+
+  const handleCostPageChange = (_event, value) => {
+    setCostPage(value);
   };
 
   const handleClose = () => {
@@ -128,14 +143,14 @@ function GroupDetails({auth}) {
     <PageContainer>
       <HeaderContainer>
         <HeaderText>{!loading && group.name}</HeaderText>
-        <AddGrpBtnContainer>
+        {!loading && <AddGrpBtnContainer>
           <AddGrpBtn onClick={() => navigate('/groups/' + id + '/finances')}>
               View Finances</AddGrpBtn>
           <AddGrpBtn onClick={() => {
             setPopUp({...popUp, page: 'ADD_COST'});
           }}>
               Add Cost</AddGrpBtn>
-        </AddGrpBtnContainer>
+        </AddGrpBtnContainer>}
       </HeaderContainer>
       <GroupsContainer>
         {loading && <CircularProgress />}
@@ -153,6 +168,10 @@ function GroupDetails({auth}) {
         {!loading && costs.length == 0 &&
         <div>No costs created!</div>}
       </GroupsContainer>
+      <GroupsFooter>
+        <Pagination count={Math.ceil(totalCosts/pageSize)}
+          onChange={handleCostPageChange}/>
+      </GroupsFooter>
       {!loading && <PopUp
         open={popUp.page ? true : false}
         handleClose={handleClose}

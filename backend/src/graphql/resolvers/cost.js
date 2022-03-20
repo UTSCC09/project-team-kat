@@ -32,9 +32,34 @@ module.exports = {
         throw new ForbiddenError('Access denied');
       }
 
-      const rawCosts = await costRepository.getCostsByGroup(id);
+      const rawCosts = await costRepository.getAllCostsByGroup(id);
       const costs = await Promise.all(rawCosts.map((a) => getCostInfo(a)));
       return costs;
+    },
+    getPaginatedCostsByGroup: async (_, {id, limit, skip}, context) => {
+      const user = checkAuth(context);
+
+      const foundGroup = await groupRepository.getGroup(id);
+      if (!foundGroup) {
+        throw new UserInputError(`Group with id: ${id} not found`);
+      } else if (!foundGroup.members.includes(user.id)) {
+        throw new ForbiddenError('Access denied');
+      }
+
+      if (limit == null || skip == null) {
+        limit = 9;
+        skip = 0;
+      }
+
+      const rawCosts = await costRepository
+          .getPaginatedCostsByGroup(id, limit, skip);
+      const costs = await Promise.all(rawCosts.map((a) => getCostInfo(a)));
+      const totalItems = await costRepository.getTotalCostsByGroup(id);
+
+      return {
+        data: costs,
+        totalItems: totalItems,
+      };
     },
   },
   Mutation: {

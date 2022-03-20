@@ -37,12 +37,17 @@ module.exports = gql`
         data: [Group!]!
         totalItems: Int
     }
+    type PaginatedCosts {
+        data: [Cost]
+        totalItems: Int
+    }
     type Query {
         getUser(id: ID!): User!
         getGroups(limit: Int, skip: Int): PaginatedGroups!
         getPostsByGroup(id: ID!): [Post]
         getGroup(id: ID!): Group!
         getCostsByGroup(id: ID!): [Cost]
+        getPaginatedCostsByGroup(id: ID!, limit: Int, skip: Int): PaginatedCosts
     }
     type Mutation {
         register(email: String!, username: String!, 
