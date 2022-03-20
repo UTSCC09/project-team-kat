@@ -4,13 +4,14 @@ export const GroupsContainer = styled.div`
 margin-top: 40px;
 display: flex;
 width: 100%;
-justify-content: space-around;
+justify-content: start;
 flex-wrap: wrap;
+gap: 15px;
 `;
 
 export const Transaction = styled.div`
 background-color: black;
-width: 32.5%;
+flex-basis: 33.3333;
 min-width: 400px;
 margin-bottom: 1%;
 padding: 20px;
