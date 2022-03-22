@@ -5,15 +5,12 @@ import {PageContainer, HeaderContainer, HeaderText, GroupsContainer,
   GroupItemsContainer,
 } from './Groups.styles';
 import {useNavigate} from 'react-router';
-import axios from 'axios';
-import {GET_GROUPS_QUERY,
-  CREATE_GROUP_MUTATION, JOIN_GROUP_MUTATION} from '../../graphql/group.defs';
-
 import ClickAwayListener from '@mui/base/ClickAwayListener';
 import Pagination from '@mui/material/Pagination';
 import PopUp from '../../components/PopUp/PopUp';
 import AddGroupForm from '../../components/AddGroupForm/AddGroupForm';
 import AddItemBtn from '../../components/AddItemBtn/AddItemBtn';
+import groupsAPI from '../../api/groups.api';
 
 
 function Groups() {
@@ -84,13 +81,7 @@ function Groups() {
 
   const getGroups = () => {
     setGroups({...groups, isLoading: true, error: ''});
-    axios.post(
-        'http://localhost:8000',
-        {
-          query: GET_GROUPS_QUERY,
-          variables: {limit: groupsPerPage, skip: groupPage - 1},
-        },
-    ).then((res) =>
+    groupsAPI.getGroups(groupsPerPage, groupPage - 1).then((res) =>
       res.data.errors ?
         setGroups({data: [], isLoading: false,
           error: res.data.errors[0].message}) :
@@ -105,31 +96,25 @@ function Groups() {
 
   const joinGroup = async () => {
     setNewGroupLoading();
-    axios
-        .post('http://localhost:8000',
-            {
-              query: JOIN_GROUP_MUTATION,
-              variables: {code: popUp.input},
-            }).then((res) => {
-          if (res.data.errors) {
-            setNewGroupError(res.data.errors[0].message);
-            return;
-          }
-          setNewGroupData(res.data.data.joinGroup);
-          getGroups();
-          handleClosePopUp();
-        }).catch((error) => {
-          console.log(error);
-          setNewGroupError(fetchError);
-        });
+
+    groupsAPI.joinGroup(popUp.input).then((res) => {
+      if (res.data.errors) {
+        setNewGroupError(res.data.errors[0].message);
+        return;
+      }
+      setNewGroupData(res.data.data.joinGroup);
+      getGroups();
+      handleClosePopUp();
+    }).catch((error) => {
+      console.log(error);
+      setNewGroupError(fetchError);
+    });
   };
 
   const createGroup = async () => {
     setNewGroupLoading();
-    axios.post('http://localhost:8000', {
-      query: CREATE_GROUP_MUTATION,
-      variables: {name: popUp.input},
-    }).then((res) => {
+
+    groupsAPI.createGroup(popUp.input).then((res) => {
       if (res.data.errors) {
         setNewGroupError(res.data.errors[0].message);
         return;

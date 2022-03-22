@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const validateCredentials = require('../../utils/validateCredentials');
 const checkAuth = require('../../utils/checkAuth');
 
-const {ForbiddenError, UserInputError} = require('apollo-server');
+const {ForbiddenError, UserInputError} = require('apollo-server-express');
 
 dotenv.config();
 

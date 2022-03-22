@@ -1,4 +1,4 @@
-const {UserInputError} = require('apollo-server');
+const {UserInputError} = require('apollo-server-express');
 
 module.exports = {
   validateEmail: (email) => {

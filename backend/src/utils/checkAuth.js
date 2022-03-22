@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const {AuthenticationError, UserInputError} = require('apollo-server');
+const {AuthenticationError, UserInputError} = require('apollo-server-express');
 const jwt = require('jsonwebtoken');
 
 dotenv.config();

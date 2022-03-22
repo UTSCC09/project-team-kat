@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router';
-import axios from 'axios';
 import RegisterPic from '../../images/register.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, RegisterBtnContainer, AuthBtn, AuthPicture, ErrorContainer,
   AuthPictureText, InputContainer, InputError} from './Auth.styles';
 import {connect} from 'react-redux';
-import {REGISTER_MUTATION} from '../../graphql/auth.defs';
 import {setNewUser} from '../../utils/AuthToken';
 import {validateEmail, validatePassword,
   validateUsername} from '../../utils/validateCredentials';
+import authAPI from '../../api/auth.api';
 
 function Register({dispatch}) {
   const navigate = useNavigate();
@@ -26,26 +25,18 @@ function Register({dispatch}) {
   const register = (userData) => {
     setIsLoading(true);
     setRegisterError('');
-    axios
-        .post('http://localhost:8000',
-            {
-              query: REGISTER_MUTATION,
-              variables: userData,
-            },
-        )
-        .then((res) =>{
-          if (res.data.errors) {
-            setRegisterError(res.data.errors[0].message);
-            setIsLoading(false);
-            return;
-          }
-          setNewUser(res.data.data.register.jwt, dispatch, navigate);
-        })
-        .catch((error) => {
-          console.log(error);
-          setRegisterError('Connection error');
-          setIsLoading(false);
-        });
+
+    authAPI.register(userData).then((res) =>{
+      if (res.data.errors) {
+        setRegisterError(res.data.errors[0].message);
+        setIsLoading(false);
+        return;
+      }
+      setNewUser(res.data.data.register.jwt, dispatch, navigate);
+    }).catch((_error) => {
+      setRegisterError('Connection error');
+      setIsLoading(false);
+    });
   };
 
   const handleRegister = (e) => {
