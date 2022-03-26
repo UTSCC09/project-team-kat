@@ -1,17 +1,29 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
-import {connect} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { connect } from 'react-redux';
 import groupsAPI from '../../api/groups.api';
 import costsAPI from '../../api/costs.api';
 import FinanceCard from '../../components/FinanceCard/FinanceCard';
-import {HeaderContainer, HeaderText} from '../Groups/Groups.styles';
-import {FinanceContainer, CardContainer} from './GroupFinance.styles';
-import {CircularProgress, Link, Breadcrumbs} from '@mui/material';
+import { HeaderContainer, HeaderText } from '../Groups/Groups.styles';
+import { FinanceContainer, CardContainer } from './GroupFinance.styles';
+import { CircularProgress, Link, Breadcrumbs } from '@mui/material';
+import { AddGrpBtnContainer, AddGrpBtn } from '../Groups/Groups.styles.jsx';
+import AddGroupForm from '../../components/AddGroupForm/AddGroupForm';
+import PopUp from '../../components/PopUp/PopUp';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import usersAPI from '../../api/users.api';
+import {PaymentElement} from '@stripe/react-stripe-js';
 
-function GroupFinance({auth}) {
-  const {groupID} = useParams();
+const stripePromise = loadStripe('pk_test_51KgrNAGQcUfT2LF4NgT1hl8AV2ZNfVqnlAKFnPJYPwKwtvFgaBnaJu0mZso2idRkDrW0vF9YvGIdWqrls4ZXlu9t00fLO75R06');
 
+
+function GroupFinance({ auth }) {
+  const { groupID } = useParams();
+  const [popup, setPopup] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [clientSecret, setClientSecret] = useState("")
+  const [stripeLoading, setStripeLoading] = useState(true);
   const [group, setGroup] = useState({});
   const [members, setMembers] = useState([]);
 
@@ -30,6 +42,32 @@ function GroupFinance({auth}) {
     setMembers(members);
     setLoading(false);
   }, []);
+
+  const createPaymentIntent = async () => {
+    const client_secret = await usersAPI.createPaymentIntent();
+    setClientSecret(client_secret)
+    setStripeLoading(false);
+  }
+
+  const renderPopup = () => {
+    createPaymentIntent().then(() => {
+      if (loading){
+        return(
+          <div>Loading</div>
+        )
+      }
+      console.log(clientSecret)
+      return(
+      //   <Elements stripe={stripePromise} options={clientSecret: }>
+      //     <form>
+      //   <PaymentElement />
+      //   <button>Submit</button>
+      // </form>
+      //     </Elements>
+      <div>hsdf</div>
+      )
+    })
+  }
 
   const calcCostAmounts = (costs, members) => {
     // how much they owe me
@@ -91,30 +129,35 @@ function GroupFinance({auth}) {
   };
 
   return (
-    <FinanceContainer>
-      {!loading && <HeaderContainer>
-        <Breadcrumbs aria-label="breadcrumb" sx={{
-          '& .MuiBreadcrumbs-separator': {
-            fontSize: '25px',
-          },
-        }} fontFamily="Comfortaa" color="black">
-          <Link underline="hover" color="inherit"
-            href={`/groups`} >
-            <HeaderText>groups</HeaderText>
-          </Link>
-          <Link underline="hover" color="inherit"
-            href={`/groups/${groupID}`} >
-            <HeaderText>{group.name}</HeaderText>
-          </Link>
-          <HeaderText>Finances</HeaderText>
-        </Breadcrumbs>
-      </HeaderContainer>}
-      <CardContainer>
-        {loading && <CircularProgress style={{margin: 'auto'}}/>}
-        {!loading && members && members.map((member) =>
-          <FinanceCard key={member.id} group={group} member={member}/>)}
-      </CardContainer>
-    </FinanceContainer>
+      <FinanceContainer>
+        <HeaderContainer>
+          {!loading && <Breadcrumbs aria-label="breadcrumb" sx={{
+            '& .MuiBreadcrumbs-separator': {
+              fontSize: '25px',
+            },
+          }} fontFamily="Comfortaa" color="black">
+            <Link underline="hover" color="inherit"
+              href={`/groups`} >
+              <HeaderText>groups</HeaderText>
+            </Link>
+            <Link underline="hover" color="inherit"
+              href={`/groups/${groupID}`} >
+              <HeaderText>{group.name}</HeaderText>
+            </Link>
+            <HeaderText>Finances</HeaderText>
+          </Breadcrumbs>}
+          {!loading && <AddGrpBtn onClick={(e) => setPopup(true)} >
+            Pay Balances!</AddGrpBtn>}
+        </HeaderContainer>
+        <CardContainer>
+          {loading && <CircularProgress style={{ margin: 'auto' }} />}
+          {!loading && members && members.map((member) =>
+            <FinanceCard key={member.id} group={group} member={member} />)}
+        </CardContainer>
+        <PopUp open={popup} handleClose={() => setPopup(false)}>
+          {renderPopup()}
+        </PopUp>
+      </FinanceContainer>
   );
 }
 

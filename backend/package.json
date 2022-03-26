@@ -28,6 +28,7 @@
     "mongoose": "^6.2.4",
     "mongoose-long": "^0.5.1",
     "referral-codes": "^2.0.1",
-    "ws": "^8.5.0"
+    "ws": "^8.5.0",
+    "stripe": "^8.211.0"
   }
 }

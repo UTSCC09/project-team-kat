@@ -2,6 +2,9 @@ const gql = require('graphql-tag');
 
 // Define all Query and Mutation Schemas
 module.exports = gql`
+    type Payment {
+        client_secret: String!
+    }
     type Cost {
         id: ID!
         name: String!
@@ -42,6 +45,7 @@ module.exports = gql`
         totalItems: Int
     }
     type Query {
+        createPaymentIntent(paymentInfo: String!): Payment!
         getUser(id: ID!): User!
         getGroups(limit: Int, skip: Int): PaginatedGroups!
         getPostsByGroup(id: ID!): [Post]

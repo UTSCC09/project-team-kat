@@ -1,5 +1,5 @@
 const userRepository = require('../../repository/dalUser');
-
+const paymentRepository = require('../../repository/dalPayment');
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
@@ -7,6 +7,7 @@ const validateCredentials = require('../../utils/validateCredentials');
 const checkAuth = require('../../utils/checkAuth');
 
 const {ForbiddenError, UserInputError} = require('apollo-server-express');
+const stripe = require('stripe')('sk_test_51KgrNAGQcUfT2LF4y9V23N76bE8YGconHsrRwSlr7co2g1bWqiP5FGeGNzPjgJACsXLC2Dw54w1cKxuIARJdENWU00XJaGexew');
 
 dotenv.config();
 
@@ -19,6 +20,30 @@ module.exports = {
       }
       const user = await userRepository.getUserById(id);
       return user;
+    },
+  },
+
+  Query: {
+    createPaymentIntent: async (_, paymentInfo, context) => {
+      // const currentUser = checkAuth(context);
+      // if (currentUser.id != id) {
+      //   throw new ForbiddenError('Unable to request data from external users!');
+      // }
+      // const user = await userRepository.getUserById(id);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: 200,
+        currency: 'cad',
+        payment_method_types: ['card'],
+        application_fee_amount: 100,
+        transfer_data: {
+          destination: 'acct_1KhHp82fDnpWQ1Hg',
+        },
+      });
+
+      const payment = paymentRepository.createPayment(paymentIntent.client_secret);
+
+      return payment;
     },
   },
 
@@ -40,6 +65,17 @@ module.exports = {
 
       const newUser = await userRepository
           .createUser(email, username, password);
+
+      const account = await stripe.accounts.create({type: 'express'});
+
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: 'https://youtube.com',
+        return_url: 'https://youtube.com',
+        type: 'account_onboarding',
+      });
+
+      console.log(accountLink);
 
       const jwtToken = jwt.sign(
           {id: newUser.id, email, username},
