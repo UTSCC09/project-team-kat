@@ -86,6 +86,23 @@ const FabricService = {
     return FabricService.attachPostFields(
         obj, id, title, message, author, group);
   },
+  updateLocation: (canvas, post, pos) => {
+    const orig = FabricService.getObjectByID(canvas, post.id);
+    orig.set({left: pos.left, top: pos.top});
+    orig.setCoords();
+    canvas.renderAll();
+  },
+  getObjectByID: (canvas, id) => {
+    const currentObjects = canvas.getObjects();
+
+    for (const object of currentObjects) {
+      if (object.postID == id) {
+        return object;
+      }
+    }
+
+    return null;
+  },
   attachPostFields: (obj, postID, title, message, author, groupID) => {
     obj = FabricService.setField(obj, 'postID', postID);
     obj = FabricService.setField(obj, 'title', title);
