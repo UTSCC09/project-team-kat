@@ -4,7 +4,7 @@ const userRepository = require('../../repository/dalUser');
 const groupRepository = require('../../repository/dalGroup');
 const mongoose = require('mongoose');
 
-const {UserInputError, ForbiddenError} = require('apollo-server-errors');
+const {UserInputError, ForbiddenError} = require('apollo-server-express');
 
 const getCostInfo = async (cost) => {
   return {

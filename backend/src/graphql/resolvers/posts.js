@@ -3,7 +3,7 @@ const groupRepository = require('../../repository/dalGroup');
 
 const dotenv = require('dotenv');
 
-const {UserInputError, AuthenticationError} = require('apollo-server');
+const {UserInputError, AuthenticationError} = require('apollo-server-express');
 const checkAuth = require('../../utils/checkAuth');
 
 dotenv.config();

@@ -2,7 +2,7 @@ const checkAuth = require('../../utils/checkAuth');
 const groupRepository = require('../../repository/dalGroup');
 const userRepository = require('../../repository/dalUser');
 
-const {UserInputError} = require('apollo-server-errors');
+const {UserInputError} = require('apollo-server-express');
 
 const getGroupInfo = async (group) => {
   return {
