@@ -64,10 +64,10 @@ module.exports = gql`
         updatePost(
             id: ID!,
             group: String!,
-            title: String!, 
-            message: String!, 
-            left: Int!,
-            top: Int!,
+            title: String, 
+            message: String, 
+            left: Int,
+            top: Int,
         ): String!
         deletePost(id: ID!, group: String!): String!
 
@@ -75,5 +75,15 @@ module.exports = gql`
         joinGroup(code: String!): Group!
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
+    }
+    type Subscription {
+        postCreated(group: String!): Post!
+        postUpdated(group: String!): PostUpdatePayload!
+        postDeleted(group: String!): String!
+    }
+    type PostUpdatePayload {
+        event: Int!
+        updater: User!
+        post: Post!
     }
 `;
