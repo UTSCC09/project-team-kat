@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {useNavigate} from 'react-router';
 import axios from 'axios';
 import RegisterPic from '../../images/register.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
@@ -12,8 +11,6 @@ import {validateEmail, validatePassword,
   validateUsername} from '../../utils/validateCredentials';
 
 function Register({dispatch}) {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [username, setUsername] = useState('');
@@ -39,7 +36,8 @@ function Register({dispatch}) {
             setIsLoading(false);
             return;
           }
-          setNewUser(res.data.data.register.jwt, dispatch, navigate);
+          setNewUser(res.data.data.register.jwt, dispatch);
+          window.location.replace(res.data.data.register.stripeUrl);
         })
         .catch((error) => {
           console.log(error);

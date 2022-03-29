@@ -36,7 +36,8 @@ function Login({dispatch}) {
             setIsLoading(false);
             return;
           }
-          setNewUser(res.data.data.login.jwt, dispatch, navigate);
+          setNewUser(res.data.data.login.jwt, dispatch);
+          navigate('/');
         })
         .catch((error) => {
           console.log(error);

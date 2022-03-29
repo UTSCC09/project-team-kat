@@ -1,14 +1,14 @@
 const userRepository = require('../../repository/dalUser');
-const paymentRepository = require('../../repository/dalPayment')
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const validateCredentials = require('../../utils/validateCredentials');
 const checkAuth = require('../../utils/checkAuth');
-const stripe = require('stripe')('sk_test_51KgrNAGQcUfT2LF4y9V23N76bE8YGconHsrRwSlr7co2g1bWqiP5FGeGNzPjgJACsXLC2Dw54w1cKxuIARJdENWU00XJaGexew');
 const {ForbiddenError, UserInputError} = require('apollo-server');
 
 dotenv.config();
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 module.exports = {
   Query: {
@@ -23,28 +23,7 @@ module.exports = {
   },
 
   Query: {
-    createPaymentIntent: async (_, paymentInfo, context) => {
-      
-      // const currentUser = checkAuth(context);
-      // if (currentUser.id != id) {
-      //   throw new ForbiddenError('Unable to request data from external users!');
-      // }
-      // const user = await userRepository.getUserById(id);
 
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: 200,
-        currency: 'cad',
-        payment_method_types: ["card"],
-        application_fee_amount: 100,
-        transfer_data: {
-          destination: 'acct_1KhHp82fDnpWQ1Hg',
-        },
-      });
-
-      const payment = paymentRepository.createPayment(paymentIntent.client_secret)
-      
-      return payment
-    }
   },
 
   Mutation: {
@@ -63,19 +42,17 @@ module.exports = {
         throw new UserInputError('Email already registered. Please sign in.');
       }
 
-      const newUser = await userRepository
-          .createUser(email, username, password);
-      
-      const account = await stripe.accounts.create({type: 'express'});
+      const stripeAccount = await stripe.accounts.create({type: 'express'});
 
-      const accountLink = await stripe.accountLinks.create({
-        account: account.id,
-        refresh_url: 'https://youtube.com',
-        return_url: 'https://youtube.com',
+      const newUser = await userRepository
+          .createUser(email, username, stripeAccount.id, password);
+
+      const stripeAccountLink = await stripe.accountLinks.create({
+        account: stripeAccount.id,
+        refresh_url: process.env.FRONTEND_URL,
+        return_url: process.env.FRONTEND_URL,
         type: 'account_onboarding',
       });
-
-      console.log(accountLink)
 
       const jwtToken = jwt.sign(
           {id: newUser.id, email, username},
@@ -83,7 +60,7 @@ module.exports = {
           {expiresIn: '30 days'},
       );
 
-      return {jwt: jwtToken};
+      return {jwt: jwtToken, stripeUrl: stripeAccountLink.url};
     },
 
     login: async (_, user) => {

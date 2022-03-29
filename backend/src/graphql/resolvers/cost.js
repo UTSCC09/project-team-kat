@@ -32,7 +32,7 @@ module.exports = {
         throw new ForbiddenError('Access denied');
       }
 
-      const rawCosts = await costRepository.getAllCostsByGroup(id);
+      const rawCosts = await costRepository.getAllActiveCostsByGroup(id);
       const costs = await Promise.all(rawCosts.map((a) => getCostInfo(a)));
       return costs;
     },
@@ -52,9 +52,9 @@ module.exports = {
       }
 
       const rawCosts = await costRepository
-          .getPaginatedCostsByGroup(id, limit, skip);
+          .getPaginatedActiveCostsByGroup(id, limit, skip);
       const costs = await Promise.all(rawCosts.map((a) => getCostInfo(a)));
-      const totalItems = await costRepository.getTotalCostsByGroup(id);
+      const totalItems = await costRepository.getTotalActiveCostsByGroup(id);
 
       return {
         data: costs,

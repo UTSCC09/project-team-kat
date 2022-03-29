@@ -27,12 +27,11 @@ export const retrieveOldUser = (dispatch) => {
   }
 };
 
-export const setNewUser = (token, dispatch, navigate) => {
+export const setNewUser = (token, dispatch) => {
   localStorage.setItem('jwtToken', token);
   setAuthToken(token);
   const decoded = jwtDecode(token);
   dispatch(setCurrentUser(decoded));
-  navigate('/');
 };
 
 export const removeOldUser = (dispatch) => {
