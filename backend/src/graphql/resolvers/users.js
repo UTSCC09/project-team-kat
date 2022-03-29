@@ -22,9 +22,6 @@ module.exports = {
     },
   },
 
-  Query: {
-  },
-
   Mutation: {
     register: async (_, user) => {
       const {email, username, password} = user;
