@@ -5,10 +5,10 @@ import {PageContainer, HeaderContainer, HeaderText,
   AddGrpBtn, AddGrpBtnContainer, GroupsFooter,
 } from '../Groups/Groups.styles.jsx';
 import CircularProgress from '@mui/material/CircularProgress';
-import {GroupsContainer, Transaction, TransactionCost, TransactionLogger,
-} from './GroupDetails.styles';
+import {GroupsContainer} from './GroupDetails.styles';
 
 import PopUp from '../../components/PopUp/PopUp.jsx';
+import Cost from '../../components/Cost/Cost';
 import Pagination from '@mui/material/Pagination';
 import AddCostForm from '../../components/AddCostForm/AddCostForm.jsx';
 import costsAPI from '../../api/costs.api.js';
@@ -172,14 +172,7 @@ function GroupDetails({auth}) {
         {loading && <CircularProgress />}
         {!loading && costs.length != 0 &&
         costs.map((cost) => (
-          <Transaction key={cost.id}>
-            <TransactionCost>
-              {cost.name} - ${cost.amount}
-            </TransactionCost>
-            <TransactionLogger>
-                  Created by: {cost.owner}
-            </TransactionLogger>
-          </Transaction>
+          <Cost key={cost.id} cost={cost}/>
         ))}
         {!loading && costs.length == 0 &&
         <div>No costs created!</div>}

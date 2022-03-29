@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {useNavigate} from 'react-router';
 import RegisterPic from '../../images/register.png';
 import {AuthWrapper, AuthContainer, AuthInfo, AuthCred, Label,
   Input, RegisterBtnContainer, AuthBtn, AuthPicture, ErrorContainer,
@@ -11,8 +10,6 @@ import {validateEmail, validatePassword,
 import authAPI from '../../api/auth.api';
 
 function Register({dispatch}) {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [username, setUsername] = useState('');
@@ -32,11 +29,14 @@ function Register({dispatch}) {
         setIsLoading(false);
         return;
       }
-      setNewUser(res.data.data.register.jwt, dispatch, navigate);
-    }).catch((_error) => {
-      setRegisterError('Connection error');
-      setIsLoading(false);
-    });
+      setNewUser(res.data.data.register.jwt, dispatch);
+      window.location.replace(res.data.data.register.stripeUrl);
+    })
+        .catch((error) => {
+          console.log(error);
+          setRegisterError('Connection error');
+          setIsLoading(false);
+        });
   };
 
   const handleRegister = (e) => {

@@ -4,12 +4,14 @@ const {ApolloError} = require('apollo-server-errors');
 const bcrypt = require('bcrypt');
 
 module.exports = {
-  createUser: async (email, username, password) => {
+  createUser: async (email, username, stripeAccountId, password) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
       const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-      const newUser = new User({username, email, password: hashedPassword});
+      const newUser = new User(
+          {username, email, stripeAccountId, password: hashedPassword},
+      );
       const savedUser = await newUser.save();
       return savedUser;
     } catch (err) {

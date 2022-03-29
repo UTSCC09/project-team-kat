@@ -3,18 +3,26 @@ const mongoose = require('mongoose');
 const {ApolloError} = require('apollo-server-errors');
 
 module.exports = {
-  getAllCostsByGroup: async (id) => {
-    const costs = await Cost.find({groupId: id});
-    return costs;
-  },
-  getPaginatedCostsByGroup: async (id, limit, skip) => {
-    const costs = await Cost.find({groupId: id})
-        .sort({'createdAt': -1}).skip(skip*limit).limit(limit);
-    return costs;
-  },
-  getTotalCostsByGroup: async (id) => {
+  getAllActiveCostsByGroup: async (id) => {
     try {
-      return await Cost.find({groupId: id}).count();
+      const costs = await Cost.find({groupId: id, active: true});
+      return costs;
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
+  getPaginatedActiveCostsByGroup: async (id, limit, skip) => {
+    try {
+      const costs = await Cost.find({groupId: id, active: true})
+          .sort({'createdAt': -1}).skip(skip*limit).limit(limit);
+      return costs;
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
+  getTotalActiveCostsByGroup: async (id) => {
+    try {
+      return await Cost.find({groupId: id, active: true}).count();
     } catch (err) {
       throw new ApolloError('Internal Error.');
     }
@@ -31,6 +39,13 @@ module.exports = {
       throw new ApolloError('Internal Error.');
     } finally {
       await session.endSession();
+    }
+  },
+  getCostById: async (id) => {
+    try {
+      return await Cost.findById(id);
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
     }
   },
 };
