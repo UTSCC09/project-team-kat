@@ -1,9 +1,7 @@
 import axios from 'axios';
 import {CREATE_PAYMENT_INTENT_QUERY} from '../graphql/payments.defs';
 
-const baseURL = 'http://localhost:8000';
-
-export const createPaymentIntent = (costId) => axios.post(baseURL, {
+export const createPaymentIntent = (costId) => axios.post('/', {
   query: CREATE_PAYMENT_INTENT_QUERY,
   variables: {costId},
 });
