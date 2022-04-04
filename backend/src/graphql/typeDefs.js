@@ -83,5 +83,7 @@ module.exports = gql`
         joinGroup(code: String!): Group!
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
+        
+        completePayment(costId: ID!): Cost
     }
 `;

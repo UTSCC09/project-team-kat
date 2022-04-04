@@ -5,3 +5,11 @@ query CreatePaymentIntent($costId: ID!) {
   }
 }
 `;
+
+export const COMPLETE_PAYMET_MUTATION = `
+mutation CompletePayment($costId: ID!) {
+  completePayment(costId: $costId) {
+    id
+  }
+}
+`;

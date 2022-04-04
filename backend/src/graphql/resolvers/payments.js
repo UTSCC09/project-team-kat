@@ -34,5 +34,17 @@ module.exports = {
       return {clientSecret: paymentIntent.client_secret};
     },
   },
-  Mutation: {},
+  Mutation: {
+    completePayment: async (_, {costId}, context) => {
+      checkAuth(context);
+      if (!mongoose.isValidObjectId(costId)) {
+        throw new UserInputError(`Invalid cost id: ${costId}`);
+      }
+      const foundCost = await costRepository.getCostById(costId);
+      if (!foundCost) {
+        throw new UserInputError(`Cost with id ${costId} not found`);
+      }
+      await costRepository.completeCostTransaction(costId);
+    },
+  },
 };

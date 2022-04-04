@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 
 import {Transaction, TransactionLogger,
-  TransactionCost, CostOptions, PayCostOption} from './Cost.styles';
+  TransactionCost, CostOptions, PayCostOption,
+  CostContainer} from './Cost.styles';
 
 import PopUp from '../PopUp/PopUp';
+import CheckoutForm from '../CheckoutForm/CheckoutForm';
 import paymentsAPI from '../../api/payments.api';
 
 import {Elements} from '@stripe/react-stripe-js';
-import {PaymentElement} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
 
 // eslint-disable-next-line max-len
@@ -23,20 +24,24 @@ function Cost({cost}) {
 
   const createPaymentIntent = async () => {
     const paymentIntent = await paymentsAPI.createPaymentIntent(cost.id);
-    console.log(paymentIntent.data.data.createPaymentIntent.clientSecret);
     setClientSecret(paymentIntent.data.data.createPaymentIntent.clientSecret);
     setStripeLoading(false);
   };
 
-  const hanndlePayCostClicked = () => {
+  const handlePayCostClicked = () => {
+    setOpenOptions(false);
     setStripeLoading(true);
     createPaymentIntent();
     setOpenPopup(true);
   };
 
+  const handlePopUpClose = () => {
+    if (!stripeLoading) setOpenPopup(false);
+  };
+
   return (
-    <>
-      <ClickAwayListener onClickAway={() => setOpenOptions(false)}>
+    <ClickAwayListener onClickAway={() => setOpenOptions(false)}>
+      <CostContainer>
         <Transaction onClick={() => setOpenOptions(true)}>
           <TransactionCost>
             {cost.name} - ${cost.amount}
@@ -44,28 +49,25 @@ function Cost({cost}) {
           <TransactionLogger>
                   Created by: {cost.owner}
           </TransactionLogger>
-          {openOptions &&
-        <CostOptions>
-          <PayCostOption onClick={() => hanndlePayCostClicked()}>
-            Pay Cost
-          </PayCostOption>
-        </CostOptions>
-          }
         </Transaction>
-      </ClickAwayListener>
-      <PopUp open={openPopup} handleClose={() => setOpenPopup(false)}>
-        {openPopup ?
+        <PopUp open={openPopup} handleClose={() => handlePopUpClose()}>
+          {openPopup ?
         (stripeLoading ?
         <div>Loading</div>:
         <Elements stripe={stripePromise} options={{clientSecret}}>
-          <form>
-            <PaymentElement />
-            <button>Submit</button>
-          </form>
+          <CheckoutForm costId={cost.id}></CheckoutForm>
         </Elements>) :
         null}
-      </PopUp>
-    </>
+        </PopUp>
+        {openOptions &&
+        <CostOptions>
+          <PayCostOption onClick={() => handlePayCostClicked()}>
+            Pay Cost
+          </PayCostOption>
+        </CostOptions>
+        }
+      </CostContainer>
+    </ClickAwayListener>
   );
 }
 

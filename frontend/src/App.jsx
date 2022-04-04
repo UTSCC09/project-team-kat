@@ -11,6 +11,7 @@ import GroupDetails from './pages/GroupDetails/GroupDetails';
 import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
 import Landing from './pages/Landing/Landing';
 import GroupFinance from './pages/GroupFinance/GroupFinance';
+import ProcessPayment from './pages/ProcessPayment/ProcessPaymet';
 
 
 function App({auth: {isAuthenticated}}) {
@@ -32,6 +33,8 @@ function App({auth: {isAuthenticated}}) {
             element={<Groups />} />
           <Route path="/groups/:id/"
             element={<GroupDetails />} />
+          <Route path="/groups/payments/:costId"
+            element={<ProcessPayment />} />
           <Route path="/groups/:groupID/canvas"
             element={<GroupCanvas />} />
           <Route path="/groups/:groupID/finances"

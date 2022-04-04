@@ -48,4 +48,11 @@ module.exports = {
       throw new ApolloError('Internal Error.');
     }
   },
+  completeCostTransaction: async (id) => {
+    try {
+      return await Cost.findByIdAndUpdate(id, {active: false});
+    } catch (err) {
+      throw new ApolloError('Internal Error.');
+    }
+  },
 };

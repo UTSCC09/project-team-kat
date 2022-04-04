@@ -1,15 +1,10 @@
 import styled from 'styled-components';
 
 export const Transaction = styled.div`
-background-color: black;
-flex-basis: 33.3333;
-min-width: 400px;
-margin-bottom: 1%;
-padding: 20px;
-display: flex;
-flex-direction: column;
-border-radius: 20px;
-position: relative;
+width: 100%;
+&:hover{
+    cursor: pointer;
+}
 `;
 
 export const TransactionLogger = styled.div`
@@ -55,4 +50,16 @@ export const PayCostOption = styled.button`
         color: white;
         cursor: pointer;
     }
+`;
+
+export const CostContainer = styled.div`
+background-color: black;
+flex-basis: 33.3333;
+min-width: 400px;
+margin-bottom: 1%;
+padding: 20px;
+display: flex;
+flex-direction: column;
+border-radius: 20px;
+position: relative;
 `;
