@@ -1,14 +1,14 @@
 const userRepository = require('../../repository/dalUser');
-
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const validateCredentials = require('../../utils/validateCredentials');
 const checkAuth = require('../../utils/checkAuth');
-
 const {ForbiddenError, UserInputError} = require('apollo-server-express');
 
 dotenv.config();
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 module.exports = {
   Query: {
@@ -38,8 +38,17 @@ module.exports = {
         throw new UserInputError('Email already registered. Please sign in.');
       }
 
+      const stripeAccount = await stripe.accounts.create({type: 'express'});
+
       const newUser = await userRepository
-          .createUser(email, username, password);
+          .createUser(email, username, stripeAccount.id, password);
+
+      const stripeAccountLink = await stripe.accountLinks.create({
+        account: stripeAccount.id,
+        refresh_url: process.env.FRONTEND_URL,
+        return_url: process.env.FRONTEND_URL,
+        type: 'account_onboarding',
+      });
 
       const jwtToken = jwt.sign(
           {id: newUser.id, email, username},
@@ -47,7 +56,7 @@ module.exports = {
           {expiresIn: '30 days'},
       );
 
-      return {jwt: jwtToken};
+      return {jwt: jwtToken, stripeUrl: stripeAccountLink.url};
     },
 
     login: async (_, user) => {

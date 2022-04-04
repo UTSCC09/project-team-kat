@@ -16,6 +16,7 @@ export const GET_PAGINATED_COSTS_BY_GROUP_QUERY = `
 query getPaginatedCostsByGroup($id: ID!, $limit: Int, $skip: Int) {
   getPaginatedCostsByGroup(id: $id, limit: $limit, skip: $skip) {
     data {
+      id
       ownerId
       name
       amount

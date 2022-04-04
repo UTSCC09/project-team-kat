@@ -11,10 +11,12 @@ import GroupDetails from './pages/GroupDetails/GroupDetails';
 import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
 import Landing from './pages/Landing/Landing';
 import GroupFinance from './pages/GroupFinance/GroupFinance';
+import ProcessPayment from './pages/ProcessPayment/ProcessPaymet';
+
 
 function App({auth: {isAuthenticated}}) {
   return (
-    <div className="App">
+    <div className="App" >
       <Navbar />
       <Routes>
         <Route path="/login"
@@ -23,18 +25,20 @@ function App({auth: {isAuthenticated}}) {
           element={(isAuthenticated) ? <Navigate to="/" /> : <Register />} />
         <Route exact path="/"
           element={(isAuthenticated) ?
-          <Navigate to="/groups" /> : <Landing />} />
+              <Navigate to="/groups" /> : <Landing />} />
 
-        <Route element={<ProtectedRoutes/>}>
+        <Route element={<ProtectedRoutes />}>
 
           <Route exact path={'/groups'}
-            element={<Groups />}/>
+            element={<Groups />} />
           <Route path="/groups/:id/"
             element={<GroupDetails />} />
+          <Route path="/groups/payments/:costId"
+            element={<ProcessPayment />} />
           <Route path="/groups/:groupID/canvas"
-            element={<GroupCanvas />}/>
+            element={<GroupCanvas />} />
           <Route path="/groups/:groupID/finances"
-            element={<GroupFinance />}/>
+            element={<GroupFinance />} />
 
         </Route>
 

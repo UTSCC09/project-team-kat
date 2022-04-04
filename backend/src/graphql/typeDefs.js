@@ -2,6 +2,9 @@ const gql = require('graphql-tag');
 
 // Define all Query and Mutation Schemas
 module.exports = gql`
+    type Payment {
+        clientSecret: String!
+    }
     type Cost {
         id: ID!
         name: String!
@@ -41,7 +44,12 @@ module.exports = gql`
         data: [Cost]
         totalItems: Int
     }
+    type NewAccountResponse {
+        jwt: ID!
+        stripeUrl: String!
+    }
     type Query {
+        createPaymentIntent(costId: ID!): Payment!
         getUser(id: ID!): User!
         getGroups(limit: Int, skip: Int): PaginatedGroups!
         getPostsByGroup(id: ID!): [Post]
@@ -51,7 +59,7 @@ module.exports = gql`
     }
     type Mutation {
         register(email: String!, username: String!, 
-            password: String!): JwtToken!
+            password: String!): NewAccountResponse!
         login(email: String!, password: String!): JwtToken!
 
         createPost(
@@ -75,5 +83,7 @@ module.exports = gql`
         joinGroup(code: String!): Group!
         createCost(name: String!, amount: String!, 
             applicableUsers: [String!]!, groupId: String!): Cost!
+        
+        completePayment(costId: ID!): Cost
     }
 `;
