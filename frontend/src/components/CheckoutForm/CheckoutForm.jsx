@@ -22,7 +22,7 @@ function CheckoutForm({costId}) {
       // `Elements` instance that was used to create the Payment Element
       elements,
       confirmParams: {
-        return_url: `http://localhost:3000/groups/payments/${costId}`,
+        return_url: `https://paymates.me/#/groups/payments/${costId}`,
       },
     });
 

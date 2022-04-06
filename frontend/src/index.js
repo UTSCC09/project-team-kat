@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import axios from 'axios';
-import {BrowserRouter} from 'react-router-dom';
+import {HashRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {ApolloProvider, ApolloClient, InMemoryCache} from '@apollo/client';
 import {split, HttpLink} from '@apollo/client';
@@ -13,14 +13,14 @@ import {createClient} from 'graphql-ws';
 import store from './redux/store';
 import {retrieveOldUser} from './utils/AuthToken';
 
-axios.defaults.baseURL = 'http://localhost:8000/graphql';
+axios.defaults.baseURL = 'https://paymates.me/graphql';
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:8000/graphql',
+  uri: 'https://paymates.me/graphql',
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:8000/graphql',
+  url: 'wss://paymates.me/graphql',
 }));
 
 const splitLink = split(
@@ -45,9 +45,9 @@ if (localStorage.jwtToken) retrieveOldUser(store.dispatch);
 ReactDOM.render(
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <BrowserRouter>
+        <HashRouter history={history}>
           <App />
-        </BrowserRouter>
+        </HashRouter>
       </Provider>
     </ApolloProvider>,
     document.getElementById('root'),

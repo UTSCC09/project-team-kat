@@ -4,6 +4,7 @@ require('dotenv').config();
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const {ApolloServer} = require('apollo-server-express');
 
 const {ApolloServerPluginDrainHttpServer} = require('apollo-server-core');
@@ -16,8 +17,8 @@ const Redis = require('ioredis');
 
 const mongoose = require('mongoose');
 
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
+const typeDefs = require('./src/graphql/typeDefs');
+const resolvers = require('./src/graphql/resolvers');
 
 const port = process.env.SERVER_PORT;
 const dbUsername = process.env.DB_USER;
@@ -29,6 +30,7 @@ const schema = makeExecutableSchema({typeDefs, resolvers});
 
 const app = express();
 app.use(cors());
+app.use(express.static(path.join(__dirname, '../../frontend/build')));
 const httpServer = http.createServer(app);
 
 const wsServer = new WebSocketServer({
