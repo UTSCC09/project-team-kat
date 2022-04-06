@@ -20,4 +20,7 @@ module.exports = {
     ...postResolvers.Mutation,
     ...paymentResolvers.Mutation,
   },
+  Subscription: {
+    ...postResolvers.Subscription,
+  },
 };

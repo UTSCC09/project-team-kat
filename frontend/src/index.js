@@ -16,11 +16,11 @@ import {retrieveOldUser} from './utils/AuthToken';
 axios.defaults.baseURL = 'http://localhost:8000/graphql';
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:3000/graphql',
+  uri: 'http://localhost:8000/graphql',
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:3000/subscriptions',
+  url: 'ws://localhost:8000/graphql',
 }));
 
 const splitLink = split(
@@ -28,7 +28,7 @@ const splitLink = split(
       const definition = getMainDefinition(query);
       return (
         definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+        definition.operation === 'subscription'
       );
     },
     wsLink,
@@ -36,7 +36,6 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8000/',
   link: splitLink,
   cache: new InMemoryCache(),
 });

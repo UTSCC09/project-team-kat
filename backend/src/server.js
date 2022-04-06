@@ -11,6 +11,9 @@ const {makeExecutableSchema} = require('@graphql-tools/schema');
 const {WebSocketServer} = require('ws');
 const {useServer} = require('graphql-ws/lib/use/ws');
 
+const {RedisPubSub} = require('graphql-redis-subscriptions');
+const Redis = require('ioredis');
+
 const mongoose = require('mongoose');
 
 const typeDefs = require('./graphql/typeDefs');
@@ -30,13 +33,33 @@ const httpServer = http.createServer(app);
 
 const wsServer = new WebSocketServer({
   server: httpServer,
-  path: '/',
+  path: '/graphql',
 });
-const serverCleanup = useServer({schema}, wsServer);
+
+// https://djaytechdiary.com/graphql-subscriptions-with-redis-pubsub
+const options = {
+  host: process.env.REDIS_HOST || '127.0.0.1',
+  port: process.env.REDIS_PORT ? process.env.REDIS_PORT : '6379',
+  retryStrategy: (times) => {
+    // reconnect after
+    return Math.min(times * 50, 2000);
+  },
+};
+
+const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options),
+});
+
+const serverCleanup = useServer({schema, context: () => {
+  return {pubsub};
+}}, wsServer);
+
 
 const server = new ApolloServer({
   schema,
-  context: ({req}) => ({req}),
+  context: ({req}) => ({req, pubsub}),
+  cors: cors(),
   plugins: [
     ApolloServerPluginDrainHttpServer({httpServer}),
     {
@@ -51,13 +74,14 @@ const server = new ApolloServer({
   ],
 });
 
+
 server.start().then(() => {
   server.applyMiddleware({app});
 
   mongoose.connect(dbURI).then(() => {
     console.log('Connected to MongoDB');
-    return httpServer.listen({port});
+    return httpServer.listen(port);
   }).then((res) => {
-    console.log(`Server running at http://localhost:${port}/graphql`);
+    console.log(`Server running at http://localhost:${port}${server.graphqlPath}`);
   }).catch((err) => console.log(err));
 });

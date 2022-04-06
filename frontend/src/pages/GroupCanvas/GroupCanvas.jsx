@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {connect} from 'react-redux';
 import {useParams} from 'react-router-dom';
+import {useSubscription} from '@apollo/client';
 import {CanvasArea, Canvas, PageContainer,
   ToolSection, AddPostDialog, ErrorContainer,
   BreadcrumbSection} from './GroupCanvas.styles';
@@ -22,9 +23,19 @@ import DialogContent from '@mui/material/DialogContent';
 import FabricService from '../../services/fabric.service';
 import postsAPI from '../../api/posts.api';
 import groupsAPI from '../../api/groups.api';
+import {CREATE_POST_SUBSCRIPTION, DELETE_POST_SUBSCRIPTION,
+  UPDATE_POST_SUBSCRIPTION} from '../../graphql/post.defs';
+
+const UPDATE_CONTENT = 1;
+const UPDATE_LOCATION = 2;
 
 function GroupCanvas({auth}) {
   const {groupID} = useParams();
+
+  const subParams = {variables: {group: groupID}};
+  const incomingCreate = useSubscription(CREATE_POST_SUBSCRIPTION, subParams);
+  const incomingUpdate = useSubscription(UPDATE_POST_SUBSCRIPTION, subParams);
+  const incomingDelete = useSubscription(DELETE_POST_SUBSCRIPTION, subParams);
 
   const [group, setGroup] = useState({});
   const [canvas, setCanvas] = useState('');
@@ -64,6 +75,48 @@ function GroupCanvas({auth}) {
     deleteRef.current = deleteMode;
   }, [deleteMode]);
 
+  useEffect(() => {
+    if (incomingCreate && incomingCreate.data) {
+      const post = incomingCreate.data.postCreated;
+
+      if (post.author == auth.user.username) return;
+
+      const fabricObject = FabricService.createPost(post);
+      canvas.add(fabricObject);
+    }
+  }, [incomingCreate]);
+
+  useEffect(() => {
+    if (incomingUpdate && incomingUpdate.data) {
+      const event = incomingUpdate.data.postUpdated.event;
+      const updater = incomingUpdate.data.postUpdated.updater;
+      const post = incomingUpdate.data.postUpdated.post;
+
+      if (updater.id == auth.user.id) return;
+
+      const original = FabricService.getObjectByID(canvas, post.id);
+
+      if (event == UPDATE_CONTENT) {
+        canvas.remove(original);
+        const fabricObject = FabricService.createPost(post);
+        canvas.add(fabricObject);
+      } else if (event == UPDATE_LOCATION) {
+        const {left, top} = post;
+        original.animate({left, top}, {
+          onChange: canvas.renderAll.bind(canvas),
+          duration: 600,
+        });
+      }
+    }
+  }, [incomingUpdate]);
+
+  useEffect(() => {
+    if (incomingDelete && incomingDelete.data) {
+      const id = incomingDelete.data.postDeleted;
+      const original = FabricService.getObjectByID(canvas, id);
+      canvas.remove(original);
+    }
+  }, [incomingDelete]);
 
   const loadPosts = async (canvas) => {
     const posts = await postsAPI.getPostsByGroup(groupID);
@@ -109,8 +162,8 @@ function GroupCanvas({auth}) {
       group: editingPost.groupID,
       title: editingPost.title,
       message: editingPost.message,
-      left: editingPost.left,
-      top: editingPost.top,
+      left: null,
+      top: null,
     };
     await postsAPI.updatePost(updatedPost);
     setEditingPost(null);
@@ -119,6 +172,8 @@ function GroupCanvas({auth}) {
     handleCloseDialog();
 
     updatedPost.author = editingPost.author;
+    updatedPost.left = editingPost.left;
+    updatedPost.top = editingPost.top;
     const fabricObject = FabricService.createPost(updatedPost);
     canvas.remove(editingPost);
     canvas.add(fabricObject);
@@ -138,10 +193,10 @@ function GroupCanvas({auth}) {
         const post = {
           id: obj.postID,
           group: obj.groupID,
-          title: obj.title,
-          message: obj.message,
           left: parseInt(obj.left, 10),
           top: parseInt(obj.top, 10),
+          title: null,
+          message: null,
         };
 
         await postsAPI.updatePost(post);
@@ -169,9 +224,9 @@ function GroupCanvas({auth}) {
       const obj = e.target;
 
       if (inDeleteMode && obj && obj.name == 'post') {
-        const a = await postsAPI.deletePost({id: obj.postID,
-          group: obj.groupID});
-        canvas.remove(obj);
+        postsAPI.deletePost({id: obj.postID, group: obj.groupID}).then(() => {
+          canvas.remove(obj);
+        });
       }
     });
   };
