@@ -28,7 +28,9 @@ We dockerized the backend and frontend into 2 seperate docker container and depl
 
 ## Maintenance
 
-We've added logs to ensure that both frontend and backend errors can be catched, if they arise. We've also thoroughly tested our applications a few days before the final deadline to ensure no last minute bugs and issues. 
+We've added logs to ensure that both frontend and backend errors can be caught, if they arise. We've also thoroughly tested our applications a few days before the final deadline to ensure no last minute bugs and issues. 
+
+We're also using DigitalOcean's built-in monitoring tools to track our application's metrics and status (latency, response times, throughput, memory, disk usage, system status, etc.).
 
 ## Challenges
 
