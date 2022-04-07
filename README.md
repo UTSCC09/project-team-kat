@@ -44,7 +44,8 @@ We're also using DigitalOcean's built-in monitoring tools to track our applicati
 
 Keshavaa Shaiskandan - Did most of the frontend design on Figma as well and implemented the landing, auth, and create cost pages. Did the initial Stripe exploration and laid the process out for integrating stripe.
 Tanizm Ahmed - Provided the main structure and format of the backend and frontend, and provided all of the error handling for frontend forms, as well as did most of the stripe integration after initial exploration by Keshavaa. 
-Ammar Tariq - Impelemnted the entire canvas page for groups, as well as migrated our backend from `a` to `b`. Was also entirely responsibly for dockerizing the application and deployment as well.
+Ammar Tariq - Implemented the entire canvas page for groups with real-time functionality. Was also entirely responsibly for dockerizing the application and deployment as well.
+
 
 # One more thing? 
 
