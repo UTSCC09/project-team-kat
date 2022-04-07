@@ -40,7 +40,7 @@ const wsServer = new WebSocketServer({
 
 // https://djaytechdiary.com/graphql-subscriptions-with-redis-pubsub
 const options = {
-  host: 'redis',
+  host: process.env.PRODUCTION === 'true' ? 'redis' : '127.0.0.1',
   port: '6379',
   retryStrategy: (times) => {
     // reconnect after

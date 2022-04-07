@@ -13,14 +13,28 @@ import {createClient} from 'graphql-ws';
 import store from './redux/store';
 import {retrieveOldUser} from './utils/AuthToken';
 
-axios.defaults.baseURL = 'https://paymates.me/graphql';
+const {REACT_APP_PRODUCTION, REACT_APP_DEV_HTTPS_URL, REACT_APP_PROD_HTTPS_URL,
+  REACT_APP_PROD_WEBSOCKET_URL, REACT_APP_DEV_WEBSOCKET_URL} =
+  process.env;
+
+const baseHttpURL = REACT_APP_PRODUCTION === 'true' ?
+REACT_APP_PROD_HTTPS_URL + '/graphql' :
+REACT_APP_DEV_HTTPS_URL + '/graphql';
+
+const websocketURL = REACT_APP_PRODUCTION === 'true' ?
+REACT_APP_PROD_WEBSOCKET_URL + '/graphql' :
+REACT_APP_DEV_WEBSOCKET_URL + '/graphql';
+
+axios.defaults.baseURL = baseHttpURL;
+
+console.log(baseHttpURL);
 
 const httpLink = new HttpLink({
-  uri: 'https://paymates.me/graphql',
+  uri: baseHttpURL,
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'wss://paymates.me/graphql',
+  url: websocketURL,
 }));
 
 const splitLink = split(
