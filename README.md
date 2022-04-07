@@ -1,47 +1,43 @@
-# Project Title: PayMates
+# PayMates
 
-### Team Members:
+## Project URL
 
-Keshavaa Shaiskandan <br>
-Ammar Tariq <br>
-Tanzim Ahmed
+**Task:** Provide the link to your deployed application. Please make sure the link works. 
 
-### Description of Application:
+## Project Video URL 
 
-The purpose of this application is to give roommates an easy and effective way to log household costs and split them up between each other as well. Users will be able to login to our application and create groups for their roommates to join. They can then simply create notes on the home page, or log costs and choose which roommates to include in the cost. There will also be a payment integration so users can directly clear their debts to their roommates through the application. 
+**Task:** Provide the link to your youtube video. Please make sure the link works. 
 
+## Project Description
 
-Additional features are described below, but this is the main gist and purpose of our application.
+PayMates is a web app that roommates can use to split costs easily and efficiently. A roommate can sign up and create a group for their fellow roommates to join. Once joined, each roommate can make posts on their group's canvas page for reminders, deadlines or whatever they want. Additionally each roommate has the ability to log a cost, as well as who that cost should be split amongst. Each roommate can then also pay off their balance to their roommates through our platform by providing their credit card details. The paid balance will be deposited into the other roommates bank account 7 days later. 
 
+## Development
 
-### Key features completed by Beta Version:
+For our backend we used `express.js` as our backend framework and `graphql` with `node.js` serving as our server. For our frontend we used `React.js` with TypeScript. In our frontend we used the `apollo-client` as our graphql client to make requests to our backend. We also used some UI components from the UI Library `Material UI` or `MUI` known today. Finally for our payments integration we utilized the `Stripe` API to let users sign up with a stripe integration when they register with our platform. We utilized the `Stripe Connect` portion of the API to transfer payments between users as well as payout to their respective bank accounts after 7 days. 
 
-1) User authentication including login, register, secured endpoints.
-2) Managing Groups - Creating groups, adding roomates, updates/deletes.
-3) Canvas View - Creating posts, moving them around, updates/deletes.
-4) Logging Costs - UI and logic for distributing costs between roommates.  
+## Deployment
 
-### Key features completed by Final Version:
-1) Support secure payments using Stripe API so that users in the same group can pay the balance they owe.
-2) Make canvas have live updates. Users are able to post on the canvas and group memebers will be able to instantly see the canvas update with the post.
-3) [Optional] Make update profile view for users to personalize profiles (possibly change name/email/password/profile picture).
-4) [Optional] Support forgot password and allow users to securely update password.
-5) [Optional] Support image upload for posts.
+We dockerized the backend and frontend into 2 seperate docker container and deployed it on digital ocean.
 
-### Tech Stack:
-1) M - MongoDB to store data
-2) A - Apollo to support Node JS and GraphQL backend server
-3) R - React JS to create interactive UIs
-4) N - Node JS to create backend server
-5) G - GraphQL for data exchange b/w client and server
-6) Docker to modularize application
-7) [Optional] AWS S3 to store images and files
+## Maintenance
 
+We've added logs to ensure that both frontend and backend errors can be catched, if they arise. We've also thoroughly tested our applications a few days before the final deadline to ensure no last minute bugs and issues. 
 
-### Top 5 Technical Challenges:
+## Challenges
 
-1) Integrating Stripe API and payments securely into our application
-2) Architecure of overall application as in, designing GraphQl models, authorizing mutations, defining public & private queries. The overall architecture can make or break this project, since careless decisions early in the development process can become costly later on.
-3) Deployment of application either using Docker or purely through Heroku, can be difficult to deploy if backend and frontend are separate along with other containers possibly
-4) Building canvas like frontend view and integrating it with the API to fetch/create posts and other backend actions tied closely with the frontend
-5) Full integration of our tech stack into our application, we plan to use AWS S3 for image/file storage which can become difficult if integration isn't easily doable. 
+**Task:** What is the top 3 most challenging things that you have learned/developed for you app? Please restrict your answer to only three items. 
+
+1. Integrating the Stripe API into our platform wasn't simple, and required a deep dive into the documentation.
+2. Ensuring that the canvas for each group had live updates, required migrating the backend from `a` to `b`.
+3. Building out the overall architecure of the platform both backend and frontend was difficult at first, but allowed the developmental process to be easier but was certainly challenging at first.
+
+## Contributions
+
+Keshavaa Shaiskandan - Did most of the frontend design on Figma as well and implemented the landing, auth, and create cost pages. Did the initial Stripe exploration and laid the process out for integrating stripe.
+Tanizm Ahmed - Provided the main structure and format of the backend and frontend, and provided all of the error handling for frontend forms, as well as did most of the stripe integration after initial exploration by Keshavaa. 
+Ammar Tariq - Impelemnted the entire canvas page for groups, as well as migrated our backend from `a` to `b`. Was also entirely responsibly for dockerizing the application and deployment as well.
+
+# One more thing? 
+
+**Task:** Any additional comment you want to share with the course staff? 
