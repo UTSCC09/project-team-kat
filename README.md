@@ -14,7 +14,13 @@ PayMates is a web app that roommates can use to split costs easily and efficient
 
 ## Development
 
-For our backend we used `express.js` as our backend framework and `graphql` with `node.js` serving as our server. For our frontend we used `React.js` with TypeScript. In our frontend we used the `apollo-client` as our graphql client to make requests to our backend. We also used some UI components from the UI Library `Material UI` or `MUI` known today. Finally for our payments integration we utilized the `Stripe` API to let users sign up with a stripe integration when they register with our platform. We utilized the `Stripe Connect` portion of the API to transfer payments between users as well as payout to their respective bank accounts after 7 days. 
+For our backend, we used `apollo-express-server` to run our `GraphQL` server and `ws` to power the websocket server. For the data layer, we used `MongoDB` and `Redis`.
+
+For our frontend we used `React.js` with `JavaScript`. In our frontend we used the `apollo-client` as our `GraphQL` client to create subscriptions, while `axios` was used for queries and mutations. We also used some UI components from the UI Library `Material UI` or `MUI` known today. 
+
+For our payments integration we utilized the `Stripe` API to let users sign up with a stripe integration when they register with our platform. We utilized the `Stripe Connect` portion of the API to transfer payments between users as well as payout to their respective bank accounts after 7 days. 
+
+To make our canvas real-time and collaborative we utilized `GraphQL` subscriptions powered by websockets, while using `Redis` as the pubsub mechanism. 
 
 ## Deployment
 
