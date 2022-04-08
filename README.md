@@ -37,7 +37,7 @@ We're also using DigitalOcean's built-in monitoring tools to track our applicati
 **Task:** What is the top 3 most challenging things that you have learned/developed for you app? Please restrict your answer to only three items. 
 
 1. Integrating the Stripe API into our platform wasn't simple, and required a deep dive into the documentation.
-2. Ensuring that the canvas for each group had live updates, required migrating the backend from `a` to `b`.
+2. Deploying the application using docker containers and also setting up Firewall rules, SSL certificates, and setting up nginx reverse proxy to serve our application.
 3. Building out the overall architecure of the platform both backend and frontend was difficult at first, but allowed the developmental process to be easier but was certainly challenging at first.
 
 ## Contributions
