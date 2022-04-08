@@ -1,7 +1,14 @@
 import React from 'react';
 import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js';
 
+const {REACT_APP_PRODUCTION, REACT_APP_FRONTEND_URL,
+  REACT_APP_PROD_HTTPS_URL} =
+  process.env;
+
 // https://stripe.com/docs/stripe-js/react#:~:text=for%20Afterpay%20payments.-,useElements%20hook,-useElements()%3A%20Elements%20%7C%20null
+const baseHttpURL = REACT_APP_PRODUCTION === 'true' ?
+REACT_APP_PROD_HTTPS_URL :
+REACT_APP_FRONTEND_URL;
 
 function CheckoutForm({costId}) {
   const stripe = useStripe();
@@ -22,7 +29,7 @@ function CheckoutForm({costId}) {
       // `Elements` instance that was used to create the Payment Element
       elements,
       confirmParams: {
-        return_url: `http://localhost:3000/groups/payments/${costId}`,
+        return_url: `${baseHttpURL}/#/groups/payments/${costId}`,
       },
     });
 

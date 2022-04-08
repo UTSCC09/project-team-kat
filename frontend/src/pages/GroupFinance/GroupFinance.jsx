@@ -99,11 +99,11 @@ function GroupFinance({auth}) {
           },
         }} fontFamily="Comfortaa" color="black">
           <Link underline="hover" color="inherit"
-            href={`/groups`} >
+            href={`#/groups`} >
             <HeaderText>groups</HeaderText>
           </Link>
           <Link underline="hover" color="inherit"
-            href={`/groups/${groupID}`} >
+            href={`#/groups/${groupID}`} >
             <HeaderText>{group.name}</HeaderText>
           </Link>
           <HeaderText>Finances</HeaderText>

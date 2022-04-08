@@ -151,7 +151,7 @@ function GroupDetails({auth}) {
           },
         }} fontFamily="Comfortaa" color="black">
           <Link underline="hover" color="inherit"
-            href={`/groups`} >
+            href={`#/groups`} >
             <HeaderText>groups</HeaderText>
           </Link>
           <HeaderText>{group.name} : {group.code}</HeaderText>

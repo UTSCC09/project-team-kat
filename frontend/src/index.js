@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import axios from 'axios';
-import {BrowserRouter} from 'react-router-dom';
+import {HashRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {ApolloProvider, ApolloClient, InMemoryCache} from '@apollo/client';
 import {split, HttpLink} from '@apollo/client';
@@ -13,14 +13,28 @@ import {createClient} from 'graphql-ws';
 import store from './redux/store';
 import {retrieveOldUser} from './utils/AuthToken';
 
-axios.defaults.baseURL = 'http://localhost:8000/graphql';
+const {REACT_APP_PRODUCTION, REACT_APP_DEV_HTTPS_URL, REACT_APP_PROD_HTTPS_URL,
+  REACT_APP_PROD_WEBSOCKET_URL, REACT_APP_DEV_WEBSOCKET_URL} =
+  process.env;
+
+const baseHttpURL = REACT_APP_PRODUCTION === 'true' ?
+REACT_APP_PROD_HTTPS_URL + '/graphql' :
+REACT_APP_DEV_HTTPS_URL + '/graphql';
+
+const websocketURL = REACT_APP_PRODUCTION === 'true' ?
+REACT_APP_PROD_WEBSOCKET_URL + '/graphql' :
+REACT_APP_DEV_WEBSOCKET_URL + '/graphql';
+
+axios.defaults.baseURL = baseHttpURL;
+
+console.log(baseHttpURL);
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:8000/graphql',
+  uri: baseHttpURL,
 });
 
 const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:8000/graphql',
+  url: websocketURL,
 }));
 
 const splitLink = split(
@@ -45,9 +59,9 @@ if (localStorage.jwtToken) retrieveOldUser(store.dispatch);
 ReactDOM.render(
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <BrowserRouter>
+        <HashRouter history={window.history}>
           <App />
-        </BrowserRouter>
+        </HashRouter>
       </Provider>
     </ApolloProvider>,
     document.getElementById('root'),

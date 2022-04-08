@@ -259,13 +259,13 @@ function GroupCanvas({auth}) {
         <Canvas id="canvas"></Canvas>
         <BreadcrumbSection>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link underline="hover" color="inherit" href="/groups">
+            <Link underline="hover" color="inherit" href="#/groups">
             Groups
             </Link>
             <Link
               underline="hover"
               color="inherit"
-              href={'/groups/' + groupID}
+              href={'#/groups/' + groupID}
             >
               {group && group.name}
             </Link>
