@@ -30,7 +30,7 @@ const schema = makeExecutableSchema({typeDefs, resolvers});
 
 const app = express();
 app.use(cors());
-app.use(express.static(path.join(__dirname, '../../frontend/build')));
+app.use(express.static(path.join(__dirname, 'client')));
 const httpServer = http.createServer(app);
 
 const wsServer = new WebSocketServer({
@@ -40,8 +40,8 @@ const wsServer = new WebSocketServer({
 
 // https://djaytechdiary.com/graphql-subscriptions-with-redis-pubsub
 const options = {
-  host: process.env.REDIS_HOST || '127.0.0.1',
-  port: process.env.REDIS_PORT ? process.env.REDIS_PORT : '6379',
+  host: 'redis',
+  port: '6379',
   retryStrategy: (times) => {
     // reconnect after
     return Math.min(times * 50, 2000);

@@ -45,7 +45,7 @@ if (localStorage.jwtToken) retrieveOldUser(store.dispatch);
 ReactDOM.render(
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <HashRouter history={history}>
+        <HashRouter history={window.history}>
           <App />
         </HashRouter>
       </Provider>
