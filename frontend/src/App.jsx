@@ -12,6 +12,7 @@ import GroupCanvas from './pages/GroupCanvas/GroupCanvas';
 import Landing from './pages/Landing/Landing';
 import GroupFinance from './pages/GroupFinance/GroupFinance';
 import ProcessPayment from './pages/ProcessPayment/ProcessPaymet';
+import Credits from './pages/Credits/Credits';
 
 
 function App({auth: {isAuthenticated}}) {
@@ -41,6 +42,9 @@ function App({auth: {isAuthenticated}}) {
             element={<GroupFinance />} />
 
         </Route>
+
+        <Route path="/credits"
+          element={<Credits />} />
 
       </Routes>
     </div>

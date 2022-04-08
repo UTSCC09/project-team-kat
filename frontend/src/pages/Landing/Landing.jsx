@@ -1,7 +1,7 @@
 import React from 'react';
 import LandingPicture from '../../images/landing.png';
 import {PageContainer, Wrapper, Heading, Info, ImageContaner,
-  Image, Button, JoinBtn} from './Landing.styles';
+  Image, Button, JoinBtn, Credits} from './Landing.styles';
 
 function Landing() {
   return (
@@ -20,6 +20,7 @@ function Landing() {
         <Button>
           <JoinBtn to="/register">Join Paymates today!</JoinBtn>
         </Button>
+        <Credits to="/credits">Credits</Credits>
       </Wrapper>
     </PageContainer>
   );
