@@ -24,7 +24,9 @@ To make our canvas real-time and collaborative we utilized `GraphQL` subscriptio
 
 ## Deployment
 
-We dockerized the backend and frontend into 2 seperate docker container and deployed it on digital ocean.
+First, we dockerized the backend into a container which statically serves the frontend content. The frontend build is generated as a step in the Dockerfile.
+
+The app runs in a Ubuntu 20.04 server (DigitalOcean droplet) while using Nginx reverse proxy with a custom domain name and HTTPS certificates (using LetsEncrypt).  
 
 ## Maintenance
 
