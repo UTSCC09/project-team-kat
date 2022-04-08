@@ -2,11 +2,11 @@
 
 ## Project URL
 
-**Task:** Provide the link to your deployed application. Please make sure the link works. 
+https://paymates.me/
 
 ## Project Video URL 
 
-**Task:** Provide the link to your youtube video. Please make sure the link works. 
+https://www.youtube.com/watch?v=GHeI6eD88zw
 
 ## Project Description
 
