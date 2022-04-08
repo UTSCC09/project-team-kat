@@ -47,3 +47,8 @@ export const JoinBtn = styled(Link)`
     border-radius: 45px;
     margin-top: 25px;
 `;
+
+export const Credits = styled(Link)`
+    display: flex;
+    justify-content: center;
+`;
