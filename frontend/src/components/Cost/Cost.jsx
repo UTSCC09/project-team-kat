@@ -14,7 +14,6 @@ import {loadStripe} from '@stripe/stripe-js';
 // eslint-disable-next-line max-len
 const stripePromise = loadStripe('pk_test_51KgrNAGQcUfT2LF4NgT1hl8AV2ZNfVqnlAKFnPJYPwKwtvFgaBnaJu0mZso2idRkDrW0vF9YvGIdWqrls4ZXlu9t00fLO75R06');
 
-
 function Cost({cost}) {
   const [openOptions, setOpenOptions] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);

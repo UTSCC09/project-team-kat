@@ -27,8 +27,6 @@ REACT_APP_DEV_WEBSOCKET_URL + '/graphql';
 
 axios.defaults.baseURL = baseHttpURL;
 
-console.log(baseHttpURL);
-
 const httpLink = new HttpLink({
   uri: baseHttpURL,
 });
