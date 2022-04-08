@@ -7,10 +7,12 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
+    restart: always
     image: "project-team-kat/paymates-backend"
     ports:
       - "8000:8000"
   redis:
+    restart: always
     image: redis
     ports:
       - "6379:6379"
